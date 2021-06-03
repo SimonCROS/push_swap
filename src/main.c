@@ -40,8 +40,14 @@ int	*init_numbers(char **str, int size, int destroy, int **stack2)
 	return (result);
 }
 
+void	start_sort(int *a, int *b, int size)
+{
+
+}
+
 int main(int argc, char *argv[])
 {
+	int		ret;
 	int		size;
 	void	*splitted;
 	int		*a;
@@ -60,19 +66,11 @@ int main(int argc, char *argv[])
 		size = argc - 1;
 		a = init_numbers(argv + 1, size, 0, &b);
 	}
+	ret = EXIT_SUCCESS;
 	if (!a || !b)
-	{
-		free(a);
-		free(b);
-		return (EXIT_FAILURE);
-	}
-	int i;
-	i = 0;
-	while (i < size)
-	{
-		printf("%d\n", a[i]);
-		i++;
-	}
+		ret = EXIT_FAILURE;
+	else
+		start_sort(a, b);
 	free(a);
 	free(b);
 	return (EXIT_SUCCESS);

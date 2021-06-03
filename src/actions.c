@@ -1,28 +1,45 @@
 #include "push_swap.h"
 
-int	action_on(t_list *stack, t_list *other, t_action action)
+void	arr_shift_left(int *array, int size)
 {
-	if (action == PUSH)
-		return (!!lst_unshift(stack, lst_shift(other)));
-	if (action == SWAP)
-		return (!!lst_insert(stack, 1, lst_shift(stack)));
-	if (action == ROTATE)
-		return (!!lst_push(stack, lst_shift(stack)));
-	if (action == REVERSE_ROTATE)
-		return (!!lst_unshift(stack, lst_pop(stack)));
-	return (FALSE);
+	int	i;
+	int	first;
+
+	i = 0;
+	first = array[i];
+	while (++i < size - 1)
+		array[i - 1] = array[i];
+	array[i] = first;
 }
 
-int	action(t_list *a, t_list *b, t_action action, t_stack stack)
+void	arr_shift_right(int *array, int size)
 {
-	int	ret;
+	int	i;
+	int	last;
 
-	ret = 1;
-	if (stack == BOTH && action == PUSH)
-		return (FALSE);
+	i = size - 1;
+	last = array[i];
+	while (--i > 0)
+		array[i + 1] = array[i];
+	array[i] = last;
+}
+
+void	action_on(int *stack, int *other, t_action action)
+{
+	if (action == PUSH)
+		lst_unshift(stack, lst_shift(other));
+	if (action == SWAP)
+		lst_insert(stack, 1, lst_shift(stack));
+	if (action == ROTATE)
+		lst_push(stack, lst_shift(stack));
+	if (action == REVERSE_ROTATE)
+		lst_unshift(stack, lst_pop(stack));
+}
+
+void	action(int *a, int *b, t_action action, t_stack stack)
+{
 	if (stack == A || stack == BOTH)
-		ret *= action_on(a, b, action);
+		action_on(a, b, action);
 	if (stack == B || stack == BOTH)
-		ret *= action_on(b, a, action);
-	return (ret);
+		action_on(b, a, action);
 }

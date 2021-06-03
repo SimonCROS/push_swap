@@ -5,7 +5,6 @@
 
 typedef enum e_action		t_action;
 typedef enum e_stack		t_stack;
-typedef struct s_int_entry	t_int_entry;
 
 enum e_action
 {
