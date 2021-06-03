@@ -22,10 +22,4 @@ enum e_stack
 	BOTH
 };
 
-struct s_int_entry
-{
-	t_int_entry	*next;
-	int			value;
-};
-
 #endif

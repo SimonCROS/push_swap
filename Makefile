@@ -13,14 +13,14 @@ override LIBFT		:= libft.a
 
 # Properties
 
-NAME				= push
+NAME				= push_swap
 
 # Commands
 
 override CC			:= gcc
 override RM			:= rm -rf
 override CFLAGS		:= -Wall -Wextra -Werror -O3
-override INCLUDES	:= -I$(INC) -I$(LIBFT_DIR)/$(INC) -I$(MINILIBX_DIR)
+override INCLUDES	:= -I$(INC) -I$(LIBFT_DIR)/$(INC)
 
 # Sources
 
@@ -35,6 +35,10 @@ override HEADERS	:= $(addprefix $(INC)/,				\
 				)
 
 all:		libs $(NAME)
+
+libs:
+			$(MAKE) -C $(LIBFT_DIR)
+			ln -sf $(LIBFT_DIR)/$(LIBFT)
 
 bonus:		all
 
