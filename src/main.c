@@ -71,7 +71,7 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 void	start_sort(int *a, int *b, int size)
 {
 	print_stacks(a, b, size, 0);
-	arr_shift_left(a, &size);
+	arr_push(a, 1, &size);
 	print_stacks(a, b, size, 0);
 }
 
@@ -103,5 +103,5 @@ int main(int argc, char *argv[])
 		start_sort(a, b, size);
 	free(a);
 	free(b);
-	return (EXIT_SUCCESS);
+	return (ret);
 }

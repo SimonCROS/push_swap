@@ -28,17 +28,35 @@ void	arr_shift_right(int *array, int *size)
 	(*size)++;
 }
 
-// void	arr_unshift(int *stack, int item, int *size)
-// {
-// 	arr_shift_right(stack, size);
-// 	stack[0] = item;
-// }
+int	arr_shift(int *stack, int *size)
+{
+	int	tmp;
 
-// void	arr_push(int *stack, int item, int *size)
-// {
-// 	stack[*size] = item;
-// 	(*size)++;
-// }
+	tmp = stack[0];
+	arr_shift_left(stack, size);
+	return (tmp);
+}
+
+int	arr_pop(int *stack, int *size)
+{
+	int	tmp;
+
+	tmp = stack[*size];
+	(*size)--;
+	return (tmp);
+}
+
+void	arr_unshift(int *stack, int item, int *size)
+{
+	arr_shift_right(stack, size);
+	stack[0] = item;
+}
+
+void	arr_push(int *stack, int item, int *size)
+{
+	stack[*size] = item;
+	(*size)++;
+}
 
 // void	action_on(int *stack, int *other, t_action action)
 // {
