@@ -1,7 +1,5 @@
 #include "push_swap.h"
 
-#include <stdio.h>//
-
 int	array_len(char **array)
 {
 	int	i;
@@ -65,14 +63,31 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 		printf(" │\n");
 		i++;
 	}
-	printf("└─────────┴─────────┘\n");
+	printf("└─────────┴─────────┘\n\033[%dA", size_a + size_b + 6);
+	usleep(0.2 * 1000000);
 }
 
 void	start_sort(int *a, int *b, int size)
 {
-	print_stacks(a, b, size, 0);
-	arr_push(a, 1, &size);
-	print_stacks(a, b, size, 0);
+	int	sizea;
+	int	sizeb;
+
+	sizea = size;
+	sizeb = 0;
+	print_stacks(a, b, sizea, sizeb);
+	while (*a)
+	{
+		int	nearest;
+		int	reverse = 0;
+
+		while ()
+		{
+
+		}		
+		action(a, b, PUSH, B, &sizea, &sizeb);
+		print_stacks(a, b, sizea, sizeb);
+	}
+	printf("\033[%dB", size + 6);
 }
 
 int main(int argc, char *argv[])
