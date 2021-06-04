@@ -21,4 +21,7 @@ enum e_stack
 	BOTH
 };
 
+void	arr_shift_left(int *array, int *size);
+void	arr_shift_right(int *array, int *size);
+
 #endif

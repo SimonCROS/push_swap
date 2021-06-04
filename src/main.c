@@ -21,8 +21,8 @@ int	*init_numbers(char **str, int size, int destroy, int **stack2)
 
 	if (!str)
 		return (NULL);
-	*stack2 = malloc(size * sizeof(int));
-	result = malloc(size * sizeof(int));
+	*stack2 = calloc(size, sizeof(int));
+	result = calloc(size, sizeof(int));
 	i = 0;
 	while (i < size)
 	{
@@ -40,9 +40,39 @@ int	*init_numbers(char **str, int size, int destroy, int **stack2)
 	return (result);
 }
 
+void	print_stacks(int *a, int *b, int size_a, int size_b)
+{
+	int	i;
+
+	i = 0;
+	printf("┌───────────────────┐\n");
+	printf("│  \033[1mStacks debugger\033[0m  │\n");
+	printf("╞═════════╤═════════╡\n");
+	printf("│ Stack A │ Stack B │\n");
+	printf("├─────────┼─────────┤\n");
+	while (i < size_a + size_b)
+	{
+		printf("│ ");
+		if (i < size_a)
+			printf("% 7d", a[i]);
+		else
+			printf("%7s", " ");
+		printf(" │ ");
+		if (i < size_b)
+			printf("% 7d", b[i]);
+		else
+			printf("%7s", " ");
+		printf(" │\n");
+		i++;
+	}
+	printf("└─────────┴─────────┘\n");
+}
+
 void	start_sort(int *a, int *b, int size)
 {
-
+	print_stacks(a, b, size, 0);
+	arr_shift_left(a, &size);
+	print_stacks(a, b, size, 0);
 }
 
 int main(int argc, char *argv[])
@@ -70,7 +100,7 @@ int main(int argc, char *argv[])
 	if (!a || !b)
 		ret = EXIT_FAILURE;
 	else
-		start_sort(a, b);
+		start_sort(a, b, size);
 	free(a);
 	free(b);
 	return (EXIT_SUCCESS);
