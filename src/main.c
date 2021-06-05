@@ -52,12 +52,12 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 	{
 		printf("│ ");
 		if (i < size_a)
-			printf("% 7d", a[i]);
+			printf("%7d", a[i]);
 		else
 			printf("%7s", " ");
 		printf(" │ ");
 		if (i < size_b)
-			printf("% 7d", b[i]);
+			printf("%7d", b[i]);
 		else
 			printf("%7s", " ");
 		printf(" │\n");
@@ -67,6 +67,45 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 	usleep(0.2 * 1000000);
 }
 
+void	replace_numbers(int **arr, int **rank, int size)
+{
+	int	*tmp;
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < size)
+	{
+		j = 0;
+		while (j < size)
+		{
+			if ((*arr)[i] > (*arr)[j])
+				(*rank)[i]++;
+			j++;
+		}
+		i++;
+	}
+	tmp = *rank;
+	*rank = *arr;
+	*arr = tmp;
+}
+
+// void	start_chunk(int *a, int *b, int *sizea, int *sizeb, int size)
+// {
+// 	int	nearest;
+// 	int	i;
+// 	int	chunk_size;
+// 	int	chunk_max;
+
+// 	i = 0;
+// 	chunk_size = size / 5;
+// 	chunk_max = get_chunk_max()
+// 	while ()
+// 	{
+// 	}	
+// 	action(a, b, PUSH, B, sizea, sizeb);
+// }
+
 void	start_sort(int *a, int *b, int size)
 {
 	int	sizea;
@@ -75,18 +114,13 @@ void	start_sort(int *a, int *b, int size)
 	sizea = size;
 	sizeb = 0;
 	print_stacks(a, b, sizea, sizeb);
-	while (*a)
-	{
-		int	nearest;
-		int	reverse = 0;
-
-		while ()
-		{
-
-		}		
-		action(a, b, PUSH, B, &sizea, &sizeb);
-		print_stacks(a, b, sizea, sizeb);
-	}
+	replace_numbers(&a, &b, size);
+	print_stacks(a, b, sizea, sizeb);
+	// while (*a)
+	// {
+	// 	start_chunk(a, b, &sizea, &sizeb, size);
+	// 	print_stacks(a, b, sizea, sizeb);
+	// }
 	printf("\033[%dB", size + 6);
 }
 
