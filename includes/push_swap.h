@@ -34,4 +34,6 @@ void	arr_insert(int *array, int item, int *size, int index);
 
 void	action(int *a, int *b, t_action action, t_stack stack, int *sizea, int *sizeb);
 
+void	print_stacks(int *a, int *b, int size_a, int size_b);
+
 #endif

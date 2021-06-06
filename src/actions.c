@@ -87,4 +87,5 @@ void	action(int *a, int *b, t_action action, t_stack stack, int *sizea, int *siz
 		action_on(a, b, action, sizea, sizeb);
 	if (stack == B || stack == BOTH)
 		action_on(b, a, action, sizeb, sizea);
+	print_stacks(a, b, *sizea, *sizeb);
 }
