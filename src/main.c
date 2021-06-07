@@ -172,5 +172,7 @@ int main(int argc, char *argv[])
 		start_sort(a, b, size);
 	free(a);
 	free(b);
+	if (ret == EXIT_FAILURE)
+		ft_putendl_fd("Error", 2);
 	return (ret);
 }
