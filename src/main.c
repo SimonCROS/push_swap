@@ -43,7 +43,6 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 	int	i;
 
 	i = 0;
-	printf("\033[%dA", size_a + size_b + 6);
 	printf("┌───────────────────┐\n");
 	printf("│  \033[1mStacks debugger\033[0m  │\n");
 	printf("╞═════════╤═════════╡\n");
@@ -65,6 +64,7 @@ void	print_stacks(int *a, int *b, int size_a, int size_b)
 		i++;
 	}
 	printf("└─────────┴─────────┘\n");
+	printf("\033[%dA", size_a + size_b + 6);
 	usleep(0.2 * 1000000);
 }
 
@@ -136,12 +136,12 @@ void	start_sort(int *a, int *b, int size)
 	chunk_step = size / 5 + 1;
 	chunk_max = chunk_step;
 	rank_array(&a, &b, size);
-	printf("\033[%dB", size + 6);
 	while (sizea)
 	{
 		make_chunk(a, b, &sizea, &sizeb, chunk_max);
 		chunk_max += chunk_step;
 	}
+	printf("\033[%dB", size + 6);
 }
 
 int main(int argc, char *argv[])
