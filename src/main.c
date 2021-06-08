@@ -114,21 +114,23 @@ void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 			j++;
 		}
 		j = *sizea;
-		while (j > half)
+		while (j-- > half)
 		{
-			if (a[j] < chunk_max)
+			if (a[j] < chunk_max && *sizea - 1 - j < nearest)
 			{
-				nearest = j;
+				nearest = -j;
 				break ;
 			}
-			j--;
 		}
-		if (nearest == -1)
+		if (nearest == *sizea)
 			return ;
-		// while (*sizeb && nearest < b[0])
-		// {
-		// 	action(a, b, ROTATE, B, sizea, sizeb);
-		// }
+		j = 0;
+		if (nearest > 0)
+			while (j++ < nearest)
+				action(a, b, ROTATE, A, sizea, sizeb);
+		else
+			while (j-- > nearest)
+				action(a, b, REVERSE_ROTATE, A, sizea, sizeb);
 		action(a, b, PUSH, B, sizea, sizeb);
 		i++;
 	}
