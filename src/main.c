@@ -94,24 +94,34 @@ void	rank_array(int **arr, int **rank, int size)
 void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 {
 	int	nearest;
+	int	half;
 	int	i;
 	int	j;
 
+	half = *sizea / 2;
 	i = 0;
 	while (i < chunk_max && *sizea)
 	{
-		nearest = -1;
+		nearest = *sizea;
 		j = 0;
-		while (j < *sizea)
+		while (j < half + 1)
 		{
 			if (a[j] < chunk_max)
 			{
-				nearest = a[j];
-				while (a[0] != nearest)
-					action(a, b, ROTATE, A, sizea, sizeb);
+				nearest = j;
 				break ;
 			}
 			j++;
+		}
+		j = *sizea;
+		while (j > half)
+		{
+			if (a[j] < chunk_max)
+			{
+				nearest = j;
+				break ;
+			}
+			j--;
 		}
 		if (nearest == -1)
 			return ;
@@ -133,7 +143,8 @@ void	start_sort(int *a, int *b, int size)
 
 	sizea = size;
 	sizeb = 0;
-	chunk_step = size / 5 + 1;
+	chunk_step = size / 5;
+	// printf("%d - %d\n", size, chunk_step);
 	chunk_max = chunk_step;
 	rank_array(&a, &b, size);
 	while (sizea)
@@ -141,7 +152,7 @@ void	start_sort(int *a, int *b, int size)
 		make_chunk(a, b, &sizea, &sizeb, chunk_max);
 		chunk_max += chunk_step;
 	}
-	printf("\033[%dB", size + 6);
+	// printf("\033[%dB", size + 6);
 }
 
 int main(int argc, char *argv[])

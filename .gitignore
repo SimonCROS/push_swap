@@ -1,5 +1,7 @@
 push_swap
 
+push_swap_visualizer
+
 ## Mlx related
 Makefile.gen
 /test/mlx-test
