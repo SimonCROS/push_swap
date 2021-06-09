@@ -116,9 +116,11 @@ void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 		j = *sizea;
 		while (j-- > half)
 		{
-			if (a[j] < chunk_max && *sizea - 1 - j < nearest)
+			if (*sizea - j >= nearest)
+				break ;
+			if (a[j] < chunk_max)
 			{
-				nearest = -j;
+				nearest = -(*sizea - j);
 				break ;
 			}
 		}
