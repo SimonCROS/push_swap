@@ -95,13 +95,11 @@ void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 {
 	int	nearest;
 	int	half;
-	int	i;
 	int	j;
 
-	half = *sizea / 2;
-	i = 0;
-	while (i < chunk_max && *sizea)
+	while (*sizea)
 	{
+		half = *sizea / 2;
 		nearest = *sizea;
 		j = 0;
 		while (j < half + 1)
@@ -134,6 +132,85 @@ void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 			while (j-- > nearest)
 				action(a, b, REVERSE_ROTATE, A, sizea, sizeb);
 		action(a, b, PUSH, B, sizea, sizeb);
+	}
+}
+
+void	make_chunki(int *a, int *b, int *sizea, int *sizeb, int chunk_min)
+{
+	int	nearest;
+	int	half;
+	int	j;
+
+	while (*sizeb)
+	{
+		half = *sizeb / 2;
+		nearest = *sizeb;
+		j = 0;
+		while (j < half + 1)
+		{
+			if (b[j] > chunk_min)
+			{
+				nearest = j;
+				break ;
+			}
+			j++;
+		}
+		j = *sizeb;
+		while (j-- > half)
+		{
+			if (*sizeb - j >= nearest)
+				break ;
+			if (b[j] > chunk_min)
+			{
+				nearest = -(*sizeb - j);
+				break ;
+			}
+		}
+		if (nearest == *sizeb)
+			return ;
+		j = 0;
+		if (nearest > 0)
+			while (j++ < nearest)
+				action(a, b, ROTATE, B, sizea, sizeb);
+		else
+			while (j-- > nearest)
+				action(a, b, REVERSE_ROTATE, B, sizea, sizeb);
+		action(a, b, PUSH, A, sizea, sizeb);
+	}
+}
+
+void	finish(int *a, int *b, int *sizea, int *sizeb)
+{
+	int	biggest_i;
+	int	biggest;
+	int	half;
+	int	i;
+
+	while (*sizeb)
+	{
+		i = 0;
+		half = *sizeb / 2;
+		biggest_i = *sizeb;
+		biggest = -1;
+		while (i < *sizeb)
+		{
+			if (b[i] > biggest)
+			{
+				biggest = b[i];
+				biggest_i = i;
+				if (i > half)
+					biggest_i = -(*sizeb - i);
+			}
+			i++;
+		}
+		i = 0;
+		if (biggest_i > 0)
+			while (i++ < biggest_i)
+				action(a, b, ROTATE, B, sizea, sizeb);
+		else
+			while (i-- > biggest_i)
+				action(a, b, REVERSE_ROTATE, B, sizea, sizeb);
+		action(a, b, PUSH, A, sizea, sizeb);
 		i++;
 	}
 }
@@ -142,20 +219,36 @@ void	start_sort(int *a, int *b, int size)
 {
 	int	chunk_step;
 	int	chunk_max;
+	int	chunk_min;
 	int	sizea;
 	int	sizeb;
 
+	(void)chunk_min; // To remove
 	sizea = size;
 	sizeb = 0;
-	chunk_step = size / 5;
-	// printf("%d - %d\n", size, chunk_step);
-	chunk_max = chunk_step;
 	rank_array(&a, &b, size);
+	chunk_step = size / 4;
+	chunk_max = chunk_step;
 	while (sizea)
 	{
 		make_chunk(a, b, &sizea, &sizeb, chunk_max);
 		chunk_max += chunk_step;
 	}
+	chunk_step = size / 8;
+	chunk_min = size;
+	while (sizeb)
+	{
+		chunk_min -= chunk_step;
+		make_chunki(a, b, &sizea, &sizeb, chunk_min);
+	}
+	chunk_step = size / 16;
+	chunk_max = chunk_step;
+	while (sizea)
+	{
+		make_chunk(a, b, &sizea, &sizeb, chunk_max);
+		chunk_max += chunk_step;
+	}
+	finish(a, b, &sizea, &sizeb);
 	// printf("\033[%dB", size + 6);
 }
 

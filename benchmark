@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+count=$1
+for i in $(seq $count); do
+	nums=`ruby -e "puts (0..499).to_a.shuffle.join(' ')"`;
+	result=`./push_swap $nums | wc -l`
+	if (( $result >= $2 )); then
+		echo "Found $result"
+		# echo "Found $result with : '$nums\`"
+	fi
+done
