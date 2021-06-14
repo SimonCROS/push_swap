@@ -38,36 +38,6 @@ int	*init_numbers(char **str, int size, int destroy, int **stack2)
 	return (result);
 }
 
-void	print_stacks(int *a, int *b, int size_a, int size_b)
-{
-	int	i;
-
-	i = 0;
-	printf("┌───────────────────┐\n");
-	printf("│  \033[1mStacks debugger\033[0m  │\n");
-	printf("╞═════════╤═════════╡\n");
-	printf("│ Stack A │ Stack B │\n");
-	printf("├─────────┼─────────┤\n");
-	while (i < size_a + size_b)
-	{
-		printf("│ ");
-		if (i < size_a)
-			printf("%7d", a[i]);
-		else
-			printf("%7s", " ");
-		printf(" │ ");
-		if (i < size_b)
-			printf("%7d", b[i]);
-		else
-			printf("%7s", " ");
-		printf(" │\n");
-		i++;
-	}
-	printf("└─────────┴─────────┘\n");
-	printf("\033[%dA", size_a + size_b + 6);
-	usleep(0.2 * 1000000);
-}
-
 void	rank_array(int **arr, int **rank, int size)
 {
 	int	*tmp;
@@ -223,33 +193,65 @@ void	start_sort(int *a, int *b, int size)
 	int	sizea;
 	int	sizeb;
 
-	(void)chunk_min; // To remove
 	sizea = size;
 	sizeb = 0;
 	rank_array(&a, &b, size);
-	chunk_step = size / 4;
-	chunk_max = chunk_step;
-	while (sizea)
+	if (size >= 500)
 	{
-		make_chunk(a, b, &sizea, &sizeb, chunk_max);
-		chunk_max += chunk_step;
+		chunk_step = size / 4;
+		chunk_max = chunk_step;
+		while (sizea)
+		{
+			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			chunk_max += chunk_step;
+		}
+		chunk_step = size / 8;
+		chunk_min = size;
+		while (sizeb)
+		{
+			chunk_min -= chunk_step;
+			make_chunki(a, b, &sizea, &sizeb, chunk_min);
+		}
+		chunk_step = size / 16;
+		chunk_max = chunk_step;
+		while (sizea)
+		{
+			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			chunk_max += chunk_step;
+		}
 	}
-	chunk_step = size / 8;
-	chunk_min = size;
-	while (sizeb)
+	else if (size >= 10)
 	{
-		chunk_min -= chunk_step;
-		make_chunki(a, b, &sizea, &sizeb, chunk_min);
+		chunk_step = size / 10;
+		chunk_max = chunk_step;
+		while (sizea)
+		{
+			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			chunk_max += chunk_step;
+		}
 	}
-	chunk_step = size / 16;
-	chunk_max = chunk_step;
-	while (sizea)
+	else
 	{
-		make_chunk(a, b, &sizea, &sizeb, chunk_max);
-		chunk_max += chunk_step;
+		chunk_max = 0;
+		while (sizea > 3)
+		{
+			chunk_max += 3;
+			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+		}
+		if (sizea == 3)
+		{
+			if (a[0] > a[1] && a[0] > a[2])
+				action(a, b, ROTATE, A, &sizea, &sizeb);
+			else if (a[1] > a[2])
+				action(a, b, SWAP, A, &sizea, &sizeb);
+			if (a[0] > a[2])
+				action(a, b, ROTATE, A, &sizea, &sizeb);
+		}
+		if (sizea >= 2)
+			if (a[0] > a[1])
+				action(a, b, SWAP, A, &sizea, &sizeb);
 	}
 	finish(a, b, &sizea, &sizeb);
-	// printf("\033[%dB", size + 6);
 }
 
 int main(int argc, char *argv[])
