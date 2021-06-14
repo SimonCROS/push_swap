@@ -1,4 +1,4 @@
-#include "push_swap.h"
+#include "push_swap/common.h"
 
 int	array_len(char **array)
 {
@@ -97,11 +97,11 @@ void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
 		j = 0;
 		if (nearest > 0)
 			while (j++ < nearest)
-				action(a, b, ROTATE, A, sizea, sizeb);
+				action(a, b, sizea, sizeb, ROTATE, A);
 		else
 			while (j-- > nearest)
-				action(a, b, REVERSE_ROTATE, A, sizea, sizeb);
-		action(a, b, PUSH, B, sizea, sizeb);
+				action(a, b, sizea, sizeb, REVERSE_ROTATE, A);
+		action(a, b, sizea, sizeb, PUSH, B);
 	}
 }
 
@@ -141,11 +141,11 @@ void	make_chunki(int *a, int *b, int *sizea, int *sizeb, int chunk_min)
 		j = 0;
 		if (nearest > 0)
 			while (j++ < nearest)
-				action(a, b, ROTATE, B, sizea, sizeb);
+				action(a, b, sizea, sizeb, ROTATE, B);
 		else
 			while (j-- > nearest)
-				action(a, b, REVERSE_ROTATE, B, sizea, sizeb);
-		action(a, b, PUSH, A, sizea, sizeb);
+				action(a, b, sizea, sizeb, REVERSE_ROTATE, B);
+		action(a, b, sizea, sizeb, PUSH, A);
 	}
 }
 
@@ -176,11 +176,11 @@ void	finish(int *a, int *b, int *sizea, int *sizeb)
 		i = 0;
 		if (biggest_i > 0)
 			while (i++ < biggest_i)
-				action(a, b, ROTATE, B, sizea, sizeb);
+				action(a, b, sizea, sizeb, ROTATE, B);
 		else
 			while (i-- > biggest_i)
-				action(a, b, REVERSE_ROTATE, B, sizea, sizeb);
-		action(a, b, PUSH, A, sizea, sizeb);
+				action(a, b, sizea, sizeb, REVERSE_ROTATE, B);
+		action(a, b, sizea, sizeb, PUSH, A);
 		i++;
 	}
 }
@@ -241,15 +241,15 @@ void	start_sort(int *a, int *b, int size)
 		if (sizea == 3)
 		{
 			if (a[0] > a[1] && a[0] > a[2])
-				action(a, b, ROTATE, A, &sizea, &sizeb);
+				action(a, b, &sizea, &sizeb, ROTATE, A);
 			else if (a[1] > a[2])
-				action(a, b, SWAP, A, &sizea, &sizeb);
+				action(a, b, &sizea, &sizeb, SWAP, A);
 			if (a[0] > a[2])
-				action(a, b, ROTATE, A, &sizea, &sizeb);
+				action(a, b, &sizea, &sizeb, ROTATE, A);
 		}
 		if (sizea >= 2)
 			if (a[0] > a[1])
-				action(a, b, SWAP, A, &sizea, &sizeb);
+				action(a, b, &sizea, &sizeb, SWAP, A);
 	}
 	finish(a, b, &sizea, &sizeb);
 }

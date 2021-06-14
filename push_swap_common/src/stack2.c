@@ -1,19 +1,19 @@
-#include "push_swap.h"
+#include "stack.h"
 
-void	stack_insert(int *array, int item, int *size, int index)
+void	stack_insert(t_stack *stack, int item, int index)
 {
-	stack_shift_right_at(array, size, index);
-	array[index] = item;
+	stack_shift_right_at(stack, index);
+	stack->array[index] = item;
 }
 
-void	stack_unshift(int *array, int item, int *size)
+void	stack_unshift(t_stack *stack, int item)
 {
-	stack_shift_right(array, size);
-	array[0] = item;
+	stack_shift_right(stack);
+	stack->array[0] = item;
 }
 
-void	stack_push(int *array, int item, int *size)
+void	stack_push(t_stack *stack, int item)
 {
-	array[*size] = item;
-	(*size)++;
+	stack->array[stack->size] = item;
+	stack->size++;
 }
