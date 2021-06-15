@@ -12,22 +12,22 @@ int	array_len(char **array)
 	return (i);
 }
 
-int	*init_numbers(char **str, int size, int destroy, int **stack2)
+t_stack	init_numbers(char **str, int size, int destroy, t_stack *stack2)
 {
-	int	*result;
+	int	*array;
 	int	i;
 
 	if (!str)
-		return (NULL);
-	*stack2 = calloc(size, sizeof(int));
-	result = calloc(size, sizeof(int));
+		return ((t_stack){NULL, size});
+	stack2->array = calloc(size, sizeof(int));
+	array = calloc(size, sizeof(int));
 	i = 0;
 	while (i < size)
 	{
-		if (result && !ft_atoi_full(str[i], &result[i]))
+		if (array && !ft_atoi_full(str[i], &array[i]))
 		{
-			free(result);
-			result = NULL;
+			free(array);
+			array = NULL;
 		}
 		if (destroy)
 			free(str[i]);
@@ -35,7 +35,7 @@ int	*init_numbers(char **str, int size, int destroy, int **stack2)
 	}
 	if (destroy)
 		free(str);
-	return (result);
+	return ((t_stack){array, size});
 }
 
 void	rank_array(int **arr, int **rank, int size)
@@ -61,162 +61,160 @@ void	rank_array(int **arr, int **rank, int size)
 	*arr = tmp;
 }
 
-void	make_chunk(int *a, int *b, int *sizea, int *sizeb, int chunk_max)
+void	make_chunk(t_stack *a, t_stack *b, int chunk_max)
 {
 	int	nearest;
 	int	half;
 	int	j;
 
-	while (*sizea)
+	while (a->size)
 	{
-		half = *sizea / 2;
-		nearest = *sizea;
+		half = a->size / 2;
+		nearest = a->size;
 		j = 0;
 		while (j < half + 1)
 		{
-			if (a[j] < chunk_max)
+			if (a->array[j] < chunk_max)
 			{
 				nearest = j;
 				break ;
 			}
 			j++;
 		}
-		j = *sizea;
+		j = a->size;
 		while (j-- > half)
 		{
-			if (*sizea - j >= nearest)
+			if (a->size - j >= nearest)
 				break ;
-			if (a[j] < chunk_max)
+			if (a->array[j] < chunk_max)
 			{
-				nearest = -(*sizea - j);
+				nearest = -(a->size - j);
 				break ;
 			}
 		}
-		if (nearest == *sizea)
+		if (nearest == a->size)
 			return ;
 		j = 0;
 		if (nearest > 0)
 			while (j++ < nearest)
-				action(a, b, sizea, sizeb, ROTATE, A);
+				action(a, b, ROTATE, A);
 		else
 			while (j-- > nearest)
-				action(a, b, sizea, sizeb, REVERSE_ROTATE, A);
-		action(a, b, sizea, sizeb, PUSH, B);
+				action(a, b, REVERSE_ROTATE, A);
+		action(a, b, PUSH, B);
 	}
 }
 
-void	make_chunki(int *a, int *b, int *sizea, int *sizeb, int chunk_min)
+void	make_chunki(t_stack *a, t_stack *b, int chunk_min)
 {
 	int	nearest;
 	int	half;
 	int	j;
 
-	while (*sizeb)
+	while (b->size)
 	{
-		half = *sizeb / 2;
-		nearest = *sizeb;
+		half = b->size / 2;
+		nearest = b->size;
 		j = 0;
 		while (j < half + 1)
 		{
-			if (b[j] > chunk_min)
+			if (b->array[j] > chunk_min)
 			{
 				nearest = j;
 				break ;
 			}
 			j++;
 		}
-		j = *sizeb;
+		j = b->size;
 		while (j-- > half)
 		{
-			if (*sizeb - j >= nearest)
+			if (b->size - j >= nearest)
 				break ;
-			if (b[j] > chunk_min)
+			if (b->array[j] > chunk_min)
 			{
-				nearest = -(*sizeb - j);
+				nearest = -(b->size - j);
 				break ;
 			}
 		}
-		if (nearest == *sizeb)
+		if (nearest == b->size)
 			return ;
 		j = 0;
 		if (nearest > 0)
 			while (j++ < nearest)
-				action(a, b, sizea, sizeb, ROTATE, B);
+				action(a, b, ROTATE, B);
 		else
 			while (j-- > nearest)
-				action(a, b, sizea, sizeb, REVERSE_ROTATE, B);
-		action(a, b, sizea, sizeb, PUSH, A);
+				action(a, b, REVERSE_ROTATE, B);
+		action(a, b, PUSH, A);
 	}
 }
 
-void	finish(int *a, int *b, int *sizea, int *sizeb)
+void	finish(t_stack *a, t_stack *b)
 {
 	int	biggest_i;
 	int	biggest;
 	int	half;
 	int	i;
 
-	while (*sizeb)
+	while (b->size)
 	{
 		i = 0;
-		half = *sizeb / 2;
-		biggest_i = *sizeb;
+		half = b->size / 2;
+		biggest_i = b->size;
 		biggest = -1;
-		while (i < *sizeb)
+		while (i < b->size)
 		{
-			if (b[i] > biggest)
+			if (b->array[i] > biggest)
 			{
-				biggest = b[i];
+				biggest = b->array[i];
 				biggest_i = i;
 				if (i > half)
-					biggest_i = -(*sizeb - i);
+					biggest_i = -(b->size - i);
 			}
 			i++;
 		}
 		i = 0;
 		if (biggest_i > 0)
 			while (i++ < biggest_i)
-				action(a, b, sizea, sizeb, ROTATE, B);
+				action(a, b, ROTATE, B);
 		else
 			while (i-- > biggest_i)
-				action(a, b, sizea, sizeb, REVERSE_ROTATE, B);
-		action(a, b, sizea, sizeb, PUSH, A);
+				action(a, b, REVERSE_ROTATE, B);
+		action(a, b, PUSH, A);
 		i++;
 	}
 }
 
-void	start_sort(int *a, int *b, int size)
+void	start_sort(t_stack *a, t_stack *b)
 {
 	int	chunk_step;
 	int	chunk_max;
 	int	chunk_min;
-	int	sizea;
-	int	sizeb;
+	int	size;
 
-	sizea = size;
-	sizeb = 0;
-	rank_array(&a, &b, size);
+	size = a->size;
+	rank_array(&a, &b, a->size);
 	if (size >= 500)
 	{
 		chunk_step = size / 4;
 		chunk_max = chunk_step;
-		while (sizea)
+		while (a->size)
 		{
-			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			make_chunk(a, b, chunk_max);
 			chunk_max += chunk_step;
 		}
 		chunk_step = size / 8;
 		chunk_min = size;
-		while (sizeb)
+		while (b->size)
 		{
 			chunk_min -= chunk_step;
-			make_chunki(a, b, &sizea, &sizeb, chunk_min);
+			make_chunki(a, b, chunk_min);
 		}
 		chunk_step = size / 16;
 		chunk_max = chunk_step;
-		while (sizea)
+		while (a->size)
 		{
-			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			make_chunk(a, b, chunk_max);
 			chunk_max += chunk_step;
 		}
 	}
@@ -224,43 +222,43 @@ void	start_sort(int *a, int *b, int size)
 	{
 		chunk_step = size / 10;
 		chunk_max = chunk_step;
-		while (sizea)
+		while (a->size)
 		{
-			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			make_chunk(a, b, chunk_max);
 			chunk_max += chunk_step;
 		}
 	}
 	else
 	{
 		chunk_max = 0;
-		while (sizea > 3)
+		while (a->size > 3)
 		{
 			chunk_max += 3;
-			make_chunk(a, b, &sizea, &sizeb, chunk_max);
+			make_chunk(a, b, chunk_max);
 		}
-		if (sizea == 3)
+		if (a->size == 3)
 		{
-			if (a[0] > a[1] && a[0] > a[2])
-				action(a, b, &sizea, &sizeb, ROTATE, A);
-			else if (a[1] > a[2])
-				action(a, b, &sizea, &sizeb, SWAP, A);
-			if (a[0] > a[2])
-				action(a, b, &sizea, &sizeb, ROTATE, A);
+			if (a->array[0] > a->array[1] && a->array[0] > a->array[2])
+				action(a, b, ROTATE, A);
+			else if (a->array[1] > a->array[2])
+				action(a, b, SWAP, A);
+			if (a->array[0] > a->array[2])
+				action(a, b, ROTATE, A);
 		}
-		if (sizea >= 2)
-			if (a[0] > a[1])
-				action(a, b, &sizea, &sizeb, SWAP, A);
+		if (a->size >= 2)
+			if (a->array[0] > a->array[1])
+				action(a, b, SWAP, A);
 	}
-	finish(a, b, &sizea, &sizeb);
+	finish(a, b);
 }
 
 int main(int argc, char *argv[])
 {
+	t_stack	a;
+	t_stack	b;
 	int		ret;
 	int		size;
 	void	*splitted;
-	int		*a;
-	int		*b;
 
 	if (argc == 1)
 		return (EXIT_SUCCESS);
@@ -276,12 +274,12 @@ int main(int argc, char *argv[])
 		a = init_numbers(argv + 1, size, 0, &b);
 	}
 	ret = EXIT_SUCCESS;
-	if (!a || !b)
+	if (!a.array || !b.array)
 		ret = EXIT_FAILURE;
 	else
-		start_sort(a, b, size);
-	free(a);
-	free(b);
+		start_sort(&a, &b);
+	free(a.array);
+	free(b.array);
 	if (ret == EXIT_FAILURE)
 		ft_putendl_fd("Error", 2);
 	return (ret);
