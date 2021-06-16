@@ -28,11 +28,12 @@ void	action(t_stack *a, t_stack *b, t_action action, t_stack_name stack)
 		operation = "r";
 	else
 		operation = "rr";
+	ft_putstr(operation);
 	if (stack == A)
-		printf("%sa", operation);
+		ft_putchar('a');
 	else if (stack == B)
-		printf("%sb", operation);
+		ft_putchar('b');
 	else if (stack == BOTH)
-		printf("%s%c", operation, operation[0]);
-	printf("\n");
+		ft_putchar(operation[0]);
+	ft_putchar('\n');
 }

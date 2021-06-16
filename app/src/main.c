@@ -61,91 +61,51 @@ void	rank_array(int **arr, int **rank, int size)
 	*arr = tmp;
 }
 
-void	make_chunk(t_stack *a, t_stack *b, int chunk_max)
+void	make_chunk(t_stack *a, t_stack *b, int chunk_max, int reversed)
 {
-	int	nearest;
-	int	half;
-	int	j;
+	int				j;
+	t_stack			*p;
+	int				half;
+	int				nearest;
 
-	while (a->size)
+	p = a;
+	if (reversed)
+		p = b;
+	while (p->size)
 	{
-		half = a->size / 2;
-		nearest = a->size;
+		half = p->size / 2;
+		nearest = p->size;
 		j = 0;
 		while (j < half + 1)
 		{
-			if (a->array[j] < chunk_max)
+			if (ft_ternary(!reversed, p->array[j] < chunk_max, p->array[j] > chunk_max))
 			{
 				nearest = j;
 				break ;
 			}
 			j++;
 		}
-		j = a->size;
+		j = p->size;
 		while (j-- > half)
 		{
-			if (a->size - j >= nearest)
+			if (p->size - j >= nearest)
 				break ;
-			if (a->array[j] < chunk_max)
+			if (ft_ternary(!reversed, p->array[j] < chunk_max, p->array[j] > chunk_max))
 			{
-				nearest = -(a->size - j);
+				nearest = -(p->size - j);
 				break ;
 			}
 		}
-		if (nearest == a->size)
+		if (nearest == p->size)
 			return ;
 		j = 0;
 		if (nearest > 0)
 			while (j++ < nearest)
-				action(a, b, ROTATE, A);
+				action(a, b, ROTATE, ft_ternary(!reversed, A, B));
 		else
 			while (j-- > nearest)
-				action(a, b, REVERSE_ROTATE, A);
-		action(a, b, PUSH, B);
-	}
-}
-
-void	make_chunki(t_stack *a, t_stack *b, int chunk_min)
-{
-	int	nearest;
-	int	half;
-	int	j;
-
-	while (b->size)
-	{
-		half = b->size / 2;
-		nearest = b->size;
-		j = 0;
-		while (j < half + 1)
-		{
-			if (b->array[j] > chunk_min)
-			{
-				nearest = j;
-				break ;
-			}
-			j++;
-		}
-		j = b->size;
-		while (j-- > half)
-		{
-			if (b->size - j >= nearest)
-				break ;
-			if (b->array[j] > chunk_min)
-			{
-				nearest = -(b->size - j);
-				break ;
-			}
-		}
-		if (nearest == b->size)
-			return ;
-		j = 0;
-		if (nearest > 0)
-			while (j++ < nearest)
-				action(a, b, ROTATE, B);
-		else
-			while (j-- > nearest)
-				action(a, b, REVERSE_ROTATE, B);
-		action(a, b, PUSH, A);
+				action(a, b, REVERSE_ROTATE, ft_ternary(!reversed, A, B));
+		action(a, b, PUSH, ft_ternary(!reversed, B, A));
 	}
 }
 
@@ -193,14 +153,14 @@ void	start_sort(t_stack *a, t_stack *b)
 	int	size;
 
 	size = a->size;
-	rank_array(&a, &b, a->size);
+	rank_array(&a->array, &b->array, a->size);
 	if (size >= 500)
 	{
 		chunk_step = size / 4;
 		chunk_max = chunk_step;
 		while (a->size)
 		{
-			make_chunk(a, b, chunk_max);
+			make_chunk(a, b, chunk_max, FALSE);
 			chunk_max += chunk_step;
 		}
 		chunk_step = size / 8;
@@ -208,13 +168,13 @@ void	start_sort(t_stack *a, t_stack *b)
 		while (b->size)
 		{
 			chunk_min -= chunk_step;
-			make_chunki(a, b, chunk_min);
+			make_chunk(a, b, chunk_min, TRUE);
 		}
 		chunk_step = size / 16;
 		chunk_max = chunk_step;
 		while (a->size)
 		{
-			make_chunk(a, b, chunk_max);
+			make_chunk(a, b, chunk_max, FALSE);
 			chunk_max += chunk_step;
 		}
 	}
@@ -224,7 +184,7 @@ void	start_sort(t_stack *a, t_stack *b)
 		chunk_max = chunk_step;
 		while (a->size)
 		{
-			make_chunk(a, b, chunk_max);
+			make_chunk(a, b, chunk_max, FALSE);
 			chunk_max += chunk_step;
 		}
 	}
@@ -234,7 +194,7 @@ void	start_sort(t_stack *a, t_stack *b)
 		while (a->size > 3)
 		{
 			chunk_max += 3;
-			make_chunk(a, b, chunk_max);
+			make_chunk(a, b, chunk_max, FALSE);
 		}
 		if (a->size == 3)
 		{

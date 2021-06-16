@@ -1,10 +1,12 @@
-LINUX				:= 0
-
 # Folders
 
 override BIN		:= bin
 override SRC		:= src
 override INC		:= includes
+
+override APP		:= app
+override CHECKER	:= checker
+override COMMON		:= common
 
 # Libraries
 
@@ -20,27 +22,47 @@ NAME				= push_swap
 override CC			:= gcc
 override RM			:= rm -rf
 override CFLAGS		:= -Wall -Wextra -Werror -O3
-override INCLUDES	:= -I$(INC) -I$(LIBFT_DIR)/$(INC)
+override INCLUDES	:= -I$(APP)/$(INC) -I$(CHECKER)/$(INC) -I$(COMMON)/$(INC) -I$(LIBFT_DIR)/$(INC)
 
 # Sources
 
-override SRCS		:=									\
-				main.c									\
+override CHECKER_SRCS:=									\
+
+override COMMON_SRCS:=									\
 				actions.c								\
+				stack1.c								\
+				stack2.c								\
 
-override OBJS		:= $(addprefix $(BIN)/, $(SRCS:.c=.o))
+override APP_SRCS	:=									\
+				main.c									\
 
-override HEADERS	:= $(addprefix $(INC)/,				\
-				push_swap.h								\
-				)
+override APP_OBJS:= $(addprefix $(APP)/, $(addprefix $(BIN)/, $(APP_SRCS:.c=.o)))
+override CHECKER_OBJS:= $(addprefix $(CHECKER)/, $(addprefix $(BIN)/, $(CHECKER_SRCS:.c=.o)))
+override COMMON_OBJS:= $(addprefix $(COMMON)/, $(addprefix $(BIN)/, $(COMMON_SRCS:.c=.o)))
+
+override OBJS		:= $(APP_OBJS) $(CHECKER_OBJS) $(COMMON_OBJS)
+
+$(APP)/$(BIN)/%.o:	$(APP)/$(SRC)/%.c $(COMMON_HEADERS)
+			@mkdir -p $(dir $@);
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(CHECKER)/$(BIN)/%.o:	$(CHECKER)/$(SRC)/%.c $(COMMON_HEADERS)
+			@mkdir -p $(dir $@);
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(COMMON)/$(BIN)/%.o:	$(COMMON)/$(SRC)/%.c $(COMMON_HEADERS)
+			@mkdir -p $(dir $@);
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+#TODO recompile on headers
 
 all:		libs $(NAME)
+
+# bonus:		checker
 
 libs:
 			$(MAKE) -C $(LIBFT_DIR)
 			ln -sf $(LIBFT_DIR)/$(LIBFT)
-
-bonus:		all
 
 $(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
 			@mkdir -p $(dir $@);

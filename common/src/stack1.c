@@ -16,7 +16,7 @@ void	stack_shift_left(t_stack *stack)
 
 void	stack_shift_right(t_stack *stack)
 {
-	stack_shift_right_at(stack->array, 0);
+	stack_shift_right_at(stack, 0);
 }
 
 void	stack_shift_right_at(t_stack *stack, int index)
