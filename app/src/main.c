@@ -61,7 +61,7 @@ void	rank_array(int **arr, int **rank, int size)
 	*arr = tmp;
 }
 
-void	make_chunk(t_stack *a, t_stack *b, int chunk_max, int reversed)
+void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
 	int				j;
 	t_stack			*p;
@@ -78,7 +78,7 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_max, int reversed)
 		j = 0;
 		while (j < half + 1)
 		{
-			if (ft_ternary(!reversed, p->array[j] < chunk_max, p->array[j] > chunk_max))
+			if (p->array[j] >= chunk_min && p->array[j] < chunk_max)
 			{
 				nearest = j;
 				break ;
@@ -88,9 +88,9 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_max, int reversed)
 		j = p->size;
 		while (j-- > half)
 		{
-			if (p->size - j >= nearest)
+			if (p->size - j >= nearest * 0.5)
 				break ;
-			if (ft_ternary(!reversed, p->array[j] < chunk_max, p->array[j] > chunk_max))
+			if (p->array[j] >= chunk_min && p->array[j] < chunk_max)
 			{
 				nearest = -(p->size - j);
 				break ;
@@ -128,7 +128,7 @@ void	finish(t_stack *a, t_stack *b)
 			{
 				biggest = b->array[i];
 				biggest_i = i;
-				if (i > half)
+				if (i > half * 1.5)
 					biggest_i = -(b->size - i);
 			}
 			i++;
@@ -145,37 +145,64 @@ void	finish(t_stack *a, t_stack *b)
 	}
 }
 
+#include <stdio.h>
+
 void	start_sort(t_stack *a, t_stack *b)
 {
 	int	chunk_step;
 	int	chunk_max;
-	int	chunk_min;
 	int	size;
 
 	size = a->size;
 	rank_array(&a->array, &b->array, a->size);
+	chunk_max = 0;
 	if (size >= 500)
 	{
+		chunk_step = size / 2;
+		chunk_max += chunk_step;
+		make_chunk(a, b, 0, chunk_max, FALSE);
 		chunk_step = size / 4;
-		chunk_max = chunk_step;
-		while (a->size)
-		{
-			make_chunk(a, b, chunk_max, FALSE);
-			chunk_max += chunk_step;
-		}
+		chunk_max += chunk_step;
+		make_chunk(a, b, 0, chunk_max, FALSE);
 		chunk_step = size / 8;
-		chunk_min = size;
-		while (b->size)
-		{
-			chunk_min -= chunk_step;
-			make_chunk(a, b, chunk_min, TRUE);
-		}
+		chunk_max += chunk_step;
+		make_chunk(a, b, 0, chunk_max, FALSE);
 		chunk_step = size / 16;
-		chunk_max = chunk_step;
+		chunk_max += chunk_step;
+		make_chunk(a, b, 0, chunk_max, FALSE);
+		chunk_step = size / 32;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 32;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 16;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 16;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 8;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 8;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 8;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 6;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 6;
+		chunk_max -= chunk_step;
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		chunk_step = size / 32;
+		chunk_max = 0;
 		while (a->size)
 		{
-			make_chunk(a, b, chunk_max, FALSE);
 			chunk_max += chunk_step;
+			make_chunk(a, b, 0, chunk_max, FALSE);
 		}
 	}
 	else if (size >= 10)
@@ -184,7 +211,7 @@ void	start_sort(t_stack *a, t_stack *b)
 		chunk_max = chunk_step;
 		while (a->size)
 		{
-			make_chunk(a, b, chunk_max, FALSE);
+			make_chunk(a, b, 0, chunk_max, FALSE);
 			chunk_max += chunk_step;
 		}
 	}
@@ -194,7 +221,7 @@ void	start_sort(t_stack *a, t_stack *b)
 		while (a->size > 3)
 		{
 			chunk_max += 3;
-			make_chunk(a, b, chunk_max, FALSE);
+			make_chunk(a, b, 0, chunk_max, FALSE);
 		}
 		if (a->size == 3)
 		{
