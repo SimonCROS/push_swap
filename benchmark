@@ -1,0 +1,12 @@
+#!/bin/sh
+
+good=0;
+
+for i in $(seq $2); do
+	nums=`ruby -e "puts (0..$(($1 - 1))).to_a.shuffle.join(' ')"`
+	result=`./push_swap $nums | wc -l`
+	if (( $result < $3 )); then
+		(( good++ ))
+	fi
+done
+echo "Precision : " (( $good / $1 * 100 ))
