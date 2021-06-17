@@ -39,15 +39,15 @@ then
 			BEST=$TMP; fi
 		if (( OBJECTIVE && TMP < OBJECTIVE )); then
 			(( GOOD++ )); fi
-		echo -e "\033[2KPire = \033[31;1m${WORSE}\033[0m instructions"
-		echo -e "\033[2KMoyenne = \033[33;1m${MED}\033[0m instructions"
-		echo -e "\033[2KMeilleur = \033[36;1m${BEST}\033[0m instructions"
+		echo -e "\033[2KPire = \033[31m${WORSE}\033[0m instructions"
+		echo -e "\033[2KMoyenne = \033[33m${MED}\033[0m instructions"
+		echo -e "\033[2KMeilleur = \033[36m${BEST}\033[0m instructions"
 		if (( OBJECTIVE )); then
-			echo -e "\033[2KPrécision = \033[34;1m$(( $GOOD * 100 / $COUNTER ))\033[0m % sous $OBJECTIVE"
+			echo -e "\033[2KPrécision = \033[1;34m$(( $GOOD * 100 / $COUNTER ))\033[0m % sous \033[1;34m$OBJECTIVE\033[0m (\033[1;31m$(($COUNTER - $GOOD))\033[0m erreur(s))"
 		else
 			echo -e "\033[2KPrécision = entrez un argument supplémentaire"
 		fi
-		echo -e "\033[2K\033[32;1m${PERCENT}\033[0m % effectué\r\033[4A\c"
+		echo -e "\033[2K\033[32m${PERCENT}\033[0m % effectué\r\033[4A\c"
 	done
 	echo -e "\033[?25h\033[4B"
 else
