@@ -63,14 +63,18 @@ void	rank_array(int **arr, int **rank, int size)
 
 void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
+	int				i;
 	int				j;
 	t_stack			*p;
 	int				half;
 	int				nearest;
+	int				is_first;
 
 	p = a;
+	i = 0;
 	if (reversed)
 		p = b;
+	is_first = ft_ternary(!reversed, !b->size, !a->size);
 	while (p->size)
 	{
 		half = p->size / 2;
@@ -97,11 +101,21 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 			}
 		}
 		if (nearest == p->size)
-			return ;
+			break ;
 		j = 0;
 		if (nearest > 0)
+		{
 			while (j++ < nearest)
-				action(a, b, ROTATE, ft_ternary(!reversed, A, B));
+			{
+				if (is_first && j == nearest && b->size >= 2 && !reversed && b->array[0] < b->array[1])
+				{
+					i++;
+					action(a, b, ROTATE, BOTH);
+				}
+				else
+					action(a, b, ROTATE, ft_ternary(!reversed, A, B));
+			}
+		}
 		else
 			while (j-- > nearest)
 				action(a, b, REVERSE_ROTATE, ft_ternary(!reversed, A, B));
