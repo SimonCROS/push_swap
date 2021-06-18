@@ -34,8 +34,8 @@ then
 			BEST=${TMP}
 		fi
 		echo -e "Pire = \033[31;1m${WORSE}\033[0m instructions"
-		echo -e "Moyenne = \033[33;1m${MED}\033[0m instructions  "
-		echo -e "Meilleur = \033[36;1m${BEST}\033[0m instructions  "
+		echo -e "Moyenne = \033[33;1m${MED}\033[0m instructions"
+		echo -e "Meilleur = \033[36;1m${BEST}\033[0m instructions"
 		echo -e "\033[32;1m${PERCENT}\033[0m % effectué\r\033[3A\c"
 	done
 	echo -e "\033[?25h\033[3B"

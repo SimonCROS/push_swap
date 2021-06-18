@@ -61,20 +61,25 @@ void	rank_array(int **arr, int **rank, int size)
 	*arr = tmp;
 }
 
+#include <stdio.h>
+
 void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
-	int				i;
 	int				j;
+	int				middle;
 	t_stack			*p;
+	t_stack			*o;
 	int				half;
 	int				nearest;
-	int				is_first;
 
 	p = a;
-	i = 0;
+	o = b;
 	if (reversed)
+	{
 		p = b;
-	is_first = ft_ternary(!reversed, !b->size, !a->size);
+		o = a;
+	}
+	middle = chunk_min + (chunk_max - chunk_min) / 2;
 	while (p->size)
 	{
 		half = p->size / 2;
@@ -92,7 +97,7 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 		j = p->size;
 		while (j-- > half)
 		{
-			if (p->size - j >= nearest * 0.5)
+			if (p->size - j >= nearest * 0.2)
 				break ;
 			if (p->array[j] >= chunk_min && p->array[j] < chunk_max)
 			{
@@ -107,11 +112,9 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 		{
 			while (j++ < nearest)
 			{
-				if (is_first && j == nearest && b->size >= 2 && !reversed && b->array[0] < b->array[1])
-				{
-					i++;
+				ft_putendl_fd("aaaa", 2);
+				if (o->size && o->array[0] < middle)
 					action(a, b, ROTATE, BOTH);
-				}
 				else
 					action(a, b, ROTATE, ft_ternary(!reversed, A, B));
 			}
@@ -159,11 +162,10 @@ void	finish(t_stack *a, t_stack *b)
 	}
 }
 
-#include <stdio.h>
-
 void	start_sort(t_stack *a, t_stack *b)
 {
 	int	chunk_step;
+	int	chunk_min;
 	int	chunk_max;
 	int	size;
 
@@ -173,46 +175,51 @@ void	start_sort(t_stack *a, t_stack *b)
 	if (size >= 500)
 	{
 		chunk_step = size / 2;
+		chunk_min = chunk_max;
 		chunk_max += chunk_step;
-		make_chunk(a, b, 0, chunk_max, FALSE);
+		make_chunk(a, b, chunk_min, chunk_max, FALSE);
 		chunk_step = size / 4;
+		chunk_min = chunk_max;
 		chunk_max += chunk_step;
-		make_chunk(a, b, 0, chunk_max, FALSE);
+		make_chunk(a, b, chunk_min, chunk_max, FALSE);
 		chunk_step = size / 8;
+		chunk_min = chunk_max;
 		chunk_max += chunk_step;
-		make_chunk(a, b, 0, chunk_max, FALSE);
+		make_chunk(a, b, chunk_min, chunk_max, FALSE);
 		chunk_step = size / 16;
+		chunk_min = chunk_max;
 		chunk_max += chunk_step;
-		make_chunk(a, b, 0, chunk_max, FALSE);
+		make_chunk(a, b, chunk_min, chunk_max, FALSE);
 		chunk_step = size / 32;
+		chunk_min = chunk_max;
 		chunk_max += chunk_step;
-		make_chunk(a, b, 0, chunk_max, FALSE);
+		make_chunk(a, b, chunk_min, chunk_max, FALSE);
 
 		chunk_step = size / 32;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_step = size / 16;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_step = size / 8;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, size, TRUE);
+		make_chunk(a, b, chunk_max, size, TRUE); // try to change this
 		chunk_step = size / 6;
 		chunk_max -= chunk_step;
 		make_chunk(a, b, chunk_max, size, TRUE);
@@ -222,8 +229,9 @@ void	start_sort(t_stack *a, t_stack *b)
 		chunk_max = 0;
 		while (a->size)
 		{
+			chunk_min = chunk_max;
 			chunk_max += chunk_step;
-			make_chunk(a, b, 0, chunk_max, FALSE);
+			make_chunk(a, b, chunk_min, chunk_max, FALSE);
 		}
 	}
 	else if (size >= 10)
