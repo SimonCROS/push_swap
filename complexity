@@ -4,9 +4,11 @@ WORSE=0
 BEST=16777216
 MED=0
 COUNTER=0
+UNIT=0
 SUM=0
 OBJECTIVE=0
-GOOD=0
+OK=0
+CHECKER="checker"
 
 trap "echo -e '\rPi\033[?25h\033[3B'; exit" INT
 
@@ -16,41 +18,89 @@ then
 	exit
 fi
 
-if [ -n "$3" ]
-then
-	(( OBJECTIVE = $3 ))
-fi
+while getopts "u" o; do
+	case "${o}" in
+		u)
+			UNIT=1
+			;;
+		*)
+			;;
+	esac
+done
+shift $((OPTIND-1))
 
-if [[ $# -gt 1 ]]
-then
-	echo -e "\033[?25l\c"
-	echo -e "\033[1;37mDémarrage du test : \033[1;35m$1\033[1;37m éléments, \033[1;35m$2\033[1;37m itérations\033[0m"
-	while [[ $COUNTER -lt $2 ]]
-	do
-		ARG=`ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
-		TMP=`./push_swap $ARG | wc -l | sed 's/ //g'`
-		(( COUNTER++ ))
-		(( PERCENT = COUNTER * 100 / $2 ))
-		(( SUM += $TMP ))
-		(( MED = $SUM / $COUNTER ))
-		if (( $TMP > $WORSE )); then
-			WORSE=$TMP; fi
-		if (( $TMP < $BEST )); then
-			BEST=$TMP; fi
-		if (( OBJECTIVE && TMP < OBJECTIVE )); then
-			(( GOOD++ )); fi
-		echo -e "\033[2KPire = \033[31m${WORSE}\033[0m instructions"
-		echo -e "\033[2KMoyenne = \033[33m${MED}\033[0m instructions"
-		echo -e "\033[2KMeilleur = \033[36m${BEST}\033[0m instructions"
-		# echo -e "\033[2KPrécision = \033[1;34m$(( $GOOD * 100 / $COUNTER ))\033[0m % sous \033[1;34m$OBJECTIVE\033[0m (\033[1;31m$(($COUNTER - $GOOD))\033[0m erreur(s))"
-		if (( OBJECTIVE )); then
-			echo -e "\033[2KObjectif = \033[1;34m$(( $GOOD * 100 / $COUNTER ))\033[0m % sous \033[1;34m$OBJECTIVE\033[0m (\033[1;31m$(($COUNTER - $GOOD))\033[0m au dessus)"
-		else
-			echo -e "\033[2KObjectif = entrez un argument supplémentaire"
-		fi
-		echo -e "\033[2K\033[32m${PERCENT}\033[0m % effectué\r\033[4A\c"
-	done
-	echo -e "\033[?25h\033[4B"
+if (( !$UNIT )); then
+	if [ -n "$3" ]
+	then
+		(( OBJECTIVE = $3 ))
+	fi
+
+	if (( OBJECTIVE < 0 ))
+	then
+		exit
+	fi
+
+	if [[ $# -gt 1 ]]
+	then
+		echo -e "\033[?25l\c"
+		echo -e "\033[1;37mDémarrage du test : \033[1;35m$1\033[1;37m éléments, \033[1;35m$2\033[1;37m itérations\033[0m"
+		while [[ $COUNTER -lt $2 ]]
+		do
+			ARG=`ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
+			TMP=`./push_swap $ARG | wc -l | sed 's/ //g'`
+			(( COUNTER++ ))
+			(( PERCENT = COUNTER * 100 / $2 ))
+			(( SUM += $TMP ))
+			(( MED = $SUM / $COUNTER ))
+			if (( $TMP > $WORSE )); then
+				WORSE=$TMP; fi
+			if (( $TMP < $BEST )); then
+				BEST=$TMP; fi
+			if (( OBJECTIVE && TMP < OBJECTIVE )); then
+				(( OK++ )); fi
+			echo -e "\033[2KPire = \033[31m${WORSE}\033[0m instructions"
+			echo -e "\033[2KMoyenne = \033[33m${MED}\033[0m instructions"
+			echo -e "\033[2KMeilleur = \033[36m${BEST}\033[0m instructions"
+			if (( OBJECTIVE )); then
+				echo -e "\033[2KObjectif = \033[1;34m$(( $OK * 100 / $COUNTER ))\033[0m % sous \033[1;34m$OBJECTIVE\033[0m (\033[1;31m$(($COUNTER - $OK))\033[0m au dessus)"
+			else
+				echo -e "\033[2KObjectif = entrez un nombre en troisième argument"
+			fi
+			echo -e "\033[2K\033[32m${PERCENT}\033[0m % effectué\r\033[4A\c"
+		done
+		echo -e "\033[?25h\033[4B"
+	else
+		echo "./complexity [stack_size] [test number]"
+	fi
 else
-	echo "./complexity [stack_size] [test number]"
+	if [ -n "$3" ]
+	then
+		CHECKER=$3
+	fi
+
+	if [[ ! -x $CHECKER || ! -f $CHECKER ]]
+	then
+		echo "Le fichier $CHECKER est absent, ou non executable."
+		exit
+	fi
+
+	if [[ $# -gt 1 ]]
+	then
+		echo -e "\033[?25l\c"
+		echo -e "\033[1;37mDémarrage du test : \033[1;35m$1\033[1;37m éléments, \033[1;35m$2\033[1;37m itérations\033[0m"
+		while [[ $COUNTER -lt $2 ]]
+		do
+			ARG=`ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
+			TMP=`./push_swap $ARG | ./$3 $ARG`
+			(( COUNTER++ ))
+			(( PERCENT = COUNTER * 100 / $2 ))
+			if [[ $TMP == "OK" ]]; then
+				(( OK++ )); fi
+			echo -e "\033[2KPrécision = \033[1;34m$(( $OK * 100 / $COUNTER ))\033[0m % OK (\033[1;31m$(($COUNTER - $OK))\033[0m KO)"
+			echo -e "\033[2K\033[32m${PERCENT}\033[0m % effectué\r\033[1A\c"
+		done
+		echo -e "\033[?25h\033[1B"
+	else
+		echo "./complexity [stack_size] [test number]"
+	fi
 fi
