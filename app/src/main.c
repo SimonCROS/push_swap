@@ -62,8 +62,6 @@ void	rank_array(int **arr, int **rank, int size)
 	*arr = tmp;
 }
 
-#include <stdio.h>
-
 void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
 	int				j;
@@ -158,6 +156,22 @@ void	finish(t_stack *a, t_stack *b)
 		action(a, b, PUSH, A);
 		i++;
 	}
+}
+
+int	is_sorted(t_stack *a)
+{
+	int	sorted;
+	int	i;
+
+	i = 0;
+	sorted = TRUE;
+	while (sorted && i < a->size - 1)
+	{
+		if (a->array[i] > a->array[i + 1])
+			sorted = FALSE;
+		i++;
+	}
+	return (sorted);
 }
 
 void	start_sort(t_stack *a, t_stack *b)
@@ -291,7 +305,7 @@ int main(int argc, char *argv[])
 	ret = EXIT_SUCCESS;
 	if (!a.array || !b.array)
 		ret = EXIT_FAILURE;
-	else
+	else if (!is_sorted(&a))
 		start_sort(&a, &b);
 	free(a.array);
 	free(b.array);
