@@ -20,6 +20,7 @@ t_stack	init_numbers(char **str, int size, int destroy, t_stack *stack2)
 	if (!str)
 		return ((t_stack){NULL, size});
 	stack2->array = calloc(size, sizeof(int));
+	stack2->size = 0;
 	array = calloc(size, sizeof(int));
 	i = 0;
 	while (i < size)
@@ -69,7 +70,6 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 	int				middle;
 	t_stack			*p;
 	t_stack			*o;
-	int				half;
 	int				nearest;
 
 	p = a;
@@ -82,7 +82,6 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 	middle = chunk_min + (chunk_max - chunk_min) / 2;
 	while (p->size)
 	{
-		half = p->size / 2;
 		nearest = p->size;
 		j = 0;
 		while (j < p->size)
@@ -196,34 +195,34 @@ void	start_sort(t_stack *a, t_stack *b)
 
 		chunk_step = size / 32;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_step = size / 16;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_step = size / 8;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_step = size / 6;
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_max -= chunk_step;
-		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE); // try to change this
+		make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
 		chunk_step = size / 32;
 		chunk_max = 0;
 		chunk_min = 0;
