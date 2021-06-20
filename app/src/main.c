@@ -12,7 +12,7 @@ int	array_len(char **array)
 	return (i);
 }
 
-t_stack	init_numbers(char **str, int size, int destroy, t_stack *stack2)
+t_stack	init_numbers(char **str, int size, t_stack *stack2)
 {
 	int	*array;
 	int	i;
@@ -30,12 +30,8 @@ t_stack	init_numbers(char **str, int size, int destroy, t_stack *stack2)
 			free(array);
 			array = NULL;
 		}
-		if (destroy)
-			free(str[i]);
 		i++;
 	}
-	if (destroy)
-		free(str);
 	return ((t_stack){array, size});
 }
 
@@ -158,20 +154,38 @@ void	finish(t_stack *a, t_stack *b)
 	}
 }
 
-int	is_sorted(t_stack *a)
+int	is_valid(t_stack *a)
 {
-	int	sorted;
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < a->size - 1)
+	{
+		j = i + 1;
+		while (j < a->size)
+		{
+			if (a->array[i] == a->array[j])
+				return (FALSE);
+			j++;
+		}
+		i++;
+	}
+	return (TRUE);
+}
+
+int	is_sorted(int *array, int length)
+{
 	int	i;
 
 	i = 0;
-	sorted = TRUE;
-	while (sorted && i < a->size - 1)
+	while (i < length - 1)
 	{
-		if (a->array[i] > a->array[i + 1])
-			sorted = FALSE;
+		if (array[i] > array[i + 1])
+			return (FALSE);
 		i++;
 	}
-	return (sorted);
+	return (TRUE);
 }
 
 void	start_sort(t_stack *a, t_stack *b)
@@ -287,25 +301,15 @@ int main(int argc, char *argv[])
 	t_stack	b;
 	int		ret;
 	int		size;
-	void	*splitted;
 
 	if (argc == 1)
 		return (EXIT_SUCCESS);
-	if (argc == 2)
-	{
-		splitted = ft_split(argv[1], ' ');
-		size = array_len(splitted);
-		a = init_numbers(splitted, size, 1, &b);
-	}
-	else
-	{
-		size = argc - 1;
-		a = init_numbers(argv + 1, size, 0, &b);
-	}
+	size = argc - 1;
+	a = init_numbers(argv + 1, size, &b);
 	ret = EXIT_SUCCESS;
-	if (!a.array || !b.array)
+	if (!a.array || !b.array || !is_valid(&a))
 		ret = EXIT_FAILURE;
-	else if (!is_sorted(&a))
+	else if (!is_sorted(a.array, a.size))
 		start_sort(&a, &b);
 	free(a.array);
 	free(b.array);
