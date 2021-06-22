@@ -1,12 +1,40 @@
 #include "push_swap/common.h"
 
+int	find_nearest(const t_stack *stack, int chunk_min, int chunk_max)
+{
+	int				nearest;
+	int				i;
+
+	nearest = stack->size;
+	i = 0;
+	while (i < stack->size)
+	{
+		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
+		{
+			nearest = i;
+			break ;
+		}
+		i++;
+	}
+	i = stack->size;
+	while (i-- > 0 && stack->size - i < nearest * 0.5)
+	{
+		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
+		{
+			nearest = -(stack->size - i);
+			break ;
+		}
+	}
+	return (nearest);
+}
+
 void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
-	int				j;
+	int				nearest;
+	int				i;
 	int				middle;
 	t_stack			*p;
 	t_stack			*o;
-	int				nearest;
 
 	p = a;
 	o = b;
@@ -18,34 +46,13 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 	middle = chunk_min + (chunk_max - chunk_min) / 2;
 	while (p->size)
 	{
-		nearest = p->size;
-		j = 0;
-		while (j < p->size)
-		{
-			if (p->array[j] >= chunk_min && p->array[j] < chunk_max)
-			{
-				nearest = j;
-				break ;
-			}
-			j++;
-		}
-		j = p->size;
-		while (j-- > 0)
-		{
-			if (p->size - j >= nearest * 0.5)
-				break ;
-			if (p->array[j] >= chunk_min && p->array[j] < chunk_max)
-			{
-				nearest = -(p->size - j);
-				break ;
-			}
-		}
+		nearest = find_nearest(p, chunk_min, chunk_max);
 		if (nearest == p->size)
 			break ;
-		j = 0;
+		i = 0;
 		if (nearest > 0)
 		{
-			while (j++ < nearest)
+			while (i++ < nearest)
 			{
 				if (o->size && o->array[0] < middle)
 					action(a, b, ROTATE, BOTH);
@@ -54,7 +61,7 @@ void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int revers
 			}
 		}
 		else
-			while (j-- > nearest)
+			while (i-- > nearest)
 				action(a, b, REVERSE_ROTATE, ft_ternary(!reversed, A, B));
 		action(a, b, PUSH, ft_ternary(!reversed, B, A));
 	}
