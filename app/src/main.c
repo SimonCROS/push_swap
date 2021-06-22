@@ -98,12 +98,9 @@ static void	move_biggest_to_top(t_stack *a, t_stack *b, int biggest,
 
 void	finish(t_stack *a, t_stack *b)
 {
-	int	half;
-
 	while (b->size)
 	{
-		half = b->size / 2;
-		move_biggest_to_top(a, b, b->size, -1);
+		move_biggest_to_top(a, b, -1, b->size);
 		action(a, b, PUSH, A);
 	}
 }
