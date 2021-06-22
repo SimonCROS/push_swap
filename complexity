@@ -9,6 +9,7 @@ SUM=0
 OBJECTIVE=0
 OK=0
 CHECKER="checker"
+SORTED=false
 
 trap "echo -e '\rPi\033[?25h\033[3B'; exit" INT
 
@@ -18,16 +19,23 @@ then
 	exit
 fi
 
-while getopts "u" o; do
+while getopts ":us" o; do
 	case "${o}" in
 		u)
 			UNIT=1
+			;;
+		s)
+			SORTED=true;
 			;;
 		*)
 			;;
 	esac
 done
 shift $((OPTIND-1))
+COMMAND="puts (1..$1).to_a.shuffle.join(' ')"
+if $SORTED; then
+	COMMAND=${COMMAND//".shuffle"/}
+fi
 
 if (( !$UNIT )); then
 	if [ -n "$3" ]
@@ -46,7 +54,7 @@ if (( !$UNIT )); then
 		echo -e "\033[1;37mDémarrage du test : \033[1;35m$1\033[1;37m éléments, \033[1;35m$2\033[1;37m itérations\033[0m"
 		while [[ $COUNTER -lt $2 ]]
 		do
-			ARG=`ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
+			ARG=`ruby -e "$COMMAND"`
 			TMP=`./push_swap $ARG | wc -l | sed 's/ //g'`
 			(( COUNTER++ ))
 			(( PERCENT = COUNTER * 100 / $2 ))
@@ -90,7 +98,7 @@ else
 		echo -e "\033[1;37mDémarrage du test : \033[1;35m$1\033[1;37m éléments, \033[1;35m$2\033[1;37m itérations\033[0m"
 		while [[ $COUNTER -lt $2 ]]
 		do
-			ARG=`ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
+			ARG=`ruby -e "$COMMAND"`
 			TMP=`./push_swap $ARG | ./$3 $ARG`
 			(( COUNTER++ ))
 			(( PERCENT = COUNTER * 100 / $2 ))

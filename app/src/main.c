@@ -1,63 +1,5 @@
 #include "push_swap/common.h"
 
-int	array_len(char **array)
-{
-	int	i;
-
-	if (!array)
-		return (0);
-	i = 0;
-	while (array[i])
-		i++;
-	return (i);
-}
-
-t_stack	init_numbers(char **str, int size, t_stack *stack2)
-{
-	int	*array;
-	int	i;
-
-	if (!str)
-		return ((t_stack){NULL, size});
-	stack2->array = calloc(size, sizeof(int));
-	stack2->size = 0;
-	array = calloc(size, sizeof(int));
-	i = 0;
-	while (i < size)
-	{
-		if (array && !ft_atoi_full(str[i], &array[i]))
-		{
-			free(array);
-			array = NULL;
-		}
-		i++;
-	}
-	return ((t_stack){array, size});
-}
-
-void	rank_array(int **arr, int **rank, int size)
-{
-	int	*tmp;
-	int	i;
-	int	j;
-
-	i = 0;
-	while (i < size)
-	{
-		j = 0;
-		while (j < size)
-		{
-			if ((*arr)[i] > (*arr)[j])
-				(*rank)[i]++;
-			j++;
-		}
-		i++;
-	}
-	tmp = *rank;
-	*rank = *arr;
-	*arr = tmp;
-}
-
 void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max, int reversed)
 {
 	int				j;
@@ -152,40 +94,6 @@ void	finish(t_stack *a, t_stack *b)
 		action(a, b, PUSH, A);
 		i++;
 	}
-}
-
-int	is_valid(t_stack *a)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (i < a->size - 1)
-	{
-		j = i + 1;
-		while (j < a->size)
-		{
-			if (a->array[i] == a->array[j])
-				return (FALSE);
-			j++;
-		}
-		i++;
-	}
-	return (TRUE);
-}
-
-int	is_sorted(int *array, int length)
-{
-	int	i;
-
-	i = 0;
-	while (i < length - 1)
-	{
-		if (array[i] > array[i + 1])
-			return (FALSE);
-		i++;
-	}
-	return (TRUE);
 }
 
 void	start_sort(t_stack *a, t_stack *b)
@@ -295,21 +203,19 @@ void	start_sort(t_stack *a, t_stack *b)
 	finish(a, b);
 }
 
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
 	t_stack	a;
 	t_stack	b;
 	int		ret;
-	int		size;
 
 	if (argc == 1)
 		return (EXIT_SUCCESS);
-	size = argc - 1;
-	a = init_numbers(argv + 1, size, &b);
+	a = init_numbers(argv + 1, argc - 1, &b);
 	ret = EXIT_SUCCESS;
 	if (!a.array || !b.array || !is_valid(&a))
 		ret = EXIT_FAILURE;
-	else if (!is_sorted(a.array, a.size))
+	else if (!array_is_sorted(a.array, a.size))
 		start_sort(&a, &b);
 	free(a.array);
 	free(b.array);

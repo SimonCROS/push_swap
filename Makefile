@@ -29,6 +29,8 @@ override INCLUDES	:= -I$(APP)/$(INC) -I$(CHECKER)/$(INC) -I$(COMMON)/$(INC) -I$(
 override CHECKER_SRCS:=									\
 
 override COMMON_SRCS:=									\
+				init.c									\
+				tests.c									\
 				actions.c								\
 				stack1.c								\
 				stack2.c								\
