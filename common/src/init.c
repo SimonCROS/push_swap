@@ -1,4 +1,4 @@
-#include "push_swap/common.h"
+#include "push_swap/ps_common.h"
 
 t_stack	init_numbers(char **argv, int size, t_stack *stack2)
 {
@@ -43,5 +43,3 @@ void	rank_array(int **arr, int **rank, int size)
 	*rank = *arr;
 	*arr = tmp;
 }
-
-

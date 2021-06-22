@@ -1,72 +1,5 @@
-#include "push_swap/common.h"
-
-int	find_nearest(const t_stack *stack, int chunk_min, int chunk_max)
-{
-	int				nearest;
-	int				i;
-
-	nearest = stack->size;
-	i = 0;
-	while (i < stack->size)
-	{
-		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
-		{
-			nearest = i;
-			break ;
-		}
-		i++;
-	}
-	i = stack->size;
-	while (i-- > 0 && stack->size - i < nearest * 0.5)
-	{
-		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
-		{
-			nearest = -(stack->size - i);
-			break ;
-		}
-	}
-	return (nearest);
-}
-
-void	make_chunk(t_stack *a, t_stack *b, int chunk_min, int chunk_max,
-	int reversed)
-{
-	int				nearest;
-	int				i;
-	int				middle;
-	t_stack			*p;
-	t_stack			*o;
-
-	p = a;
-	o = b;
-	if (reversed)
-	{
-		p = b;
-		o = a;
-	}
-	middle = chunk_min + (chunk_max - chunk_min) / 2;
-	while (p->size)
-	{
-		nearest = find_nearest(p, chunk_min, chunk_max);
-		if (nearest == p->size)
-			break ;
-		i = 0;
-		if (nearest > 0)
-		{
-			while (i++ < nearest)
-			{
-				if (o->size && o->array[0] < middle)
-					action(a, b, ROTATE, BOTH);
-				else
-					action(a, b, ROTATE, ft_ternary(!reversed, A, B));
-			}
-		}
-		else
-			while (i-- > nearest)
-				action(a, b, REVERSE_ROTATE, ft_ternary(!reversed, A, B));
-		action(a, b, PUSH, ft_ternary(!reversed, B, A));
-	}
-}
+#include "push_swap/ps_common.h"
+#include "push_swap/ps_app.h"
 
 static void	move_biggest_to_top(t_stack *a, t_stack *b, int biggest,
 		int biggest_i)
@@ -96,7 +29,7 @@ static void	move_biggest_to_top(t_stack *a, t_stack *b, int biggest,
 			action(a, b, REVERSE_ROTATE, B);
 }
 
-void	finish(t_stack *a, t_stack *b)
+static void	finish(t_stack *a, t_stack *b)
 {
 	while (b->size)
 	{
@@ -129,60 +62,22 @@ static void	make_under_10(t_stack *a, t_stack *b)
 			action(a, b, SWAP, A);
 }
 
-/**
- * @param options[0] iterations
- * @param options[1] steps
- * @param options[2] reduce on iterate
- * @param options[3] reverse
- */
-static int	iter_chunk(t_stack *a, t_stack *b, int size, int options[4],
-	int chunk_max)
-{
-	t_stack	*p;
-	int		chunk_step;
-	int		chunk_min;
-	int		i;
-
-	p = a;
-	if (options[3])
-		p = b;
-	i = 0;
-	chunk_step = size / options[1];
-	while (i++ != options[0] && p->size)
-	{
-		chunk_min = chunk_max;
-		if (!options[3])
-		{
-			chunk_max += chunk_step;
-			make_chunk(a, b, chunk_min, chunk_max, FALSE);
-		}
-		else
-		{
-			chunk_max -= chunk_step;
-			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
-		}
-		if (options[2])
-			chunk_step /= 2;
-	}
-	return (chunk_max);
-}
-
-void	start_sort(t_stack *a, t_stack *b)
+static void	start_sort(t_stack *a, t_stack *b)
 {
 	int	size;
 
 	size = a->size;
 	rank_array(&a->array, &b->array, a->size);
 	if (size >= 500)
-		iter_chunk(a, b, size, (int [4]){-1, 32, FALSE, FALSE},
-			iter_chunk(a, b, size, (int [4]){2, 6, FALSE, TRUE},
-				iter_chunk(a, b, size, (int [4]){4, 8, FALSE, TRUE},
-					iter_chunk(a, b, size, (int [4]){4, 16, FALSE, TRUE},
-						iter_chunk(a, b, size, (int [4]){3, 32, FALSE, TRUE},
-							iter_chunk(a, b, size, (int [4]){5, 2, TRUE, FALSE},
+		iter_chunk(a, b, (int [5]){size, -1, 32, FALSE, FALSE},
+			iter_chunk(a, b, (int [5]){size, 2, 6, FALSE, TRUE},
+				iter_chunk(a, b, (int [5]){size, 4, 8, FALSE, TRUE},
+					iter_chunk(a, b, (int [5]){size, 4, 16, FALSE, TRUE},
+						iter_chunk(a, b, (int [5]){size, 3, 32, FALSE, TRUE},
+							iter_chunk(a, b, (int [5]){size, 5, 2, TRUE, FALSE},
 								0))))));
 	else if (size >= 10)
-		iter_chunk(a, b, size, (int [4]){-1, 5, FALSE, FALSE}, 0);
+		iter_chunk(a, b, (int [5]){size, -1, 5, FALSE, FALSE}, 0);
 	else
 		make_under_10(a, b);
 	finish(a, b);

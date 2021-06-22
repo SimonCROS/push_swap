@@ -1,4 +1,4 @@
-#include "push_swap/common.h"
+#include "push_swap/ps_common.h"
 
 int	is_valid(t_stack *a)
 {

@@ -37,6 +37,7 @@ override COMMON_SRCS:=									\
 
 override APP_SRCS	:=									\
 				main.c									\
+				chunk.c									\
 
 override APP_OBJS:= $(addprefix $(APP)/, $(addprefix $(BIN)/, $(APP_SRCS:.c=.o)))
 override CHECKER_OBJS:= $(addprefix $(CHECKER)/, $(addprefix $(BIN)/, $(CHECKER_SRCS:.c=.o)))

@@ -1,11 +1,11 @@
-#ifndef COMMON_H
-# define COMMON_H
+#ifndef PS_COMMON_H
+# define PS_COMMON_H
 
 # include "libft.h"
 # include "stack.h"
 
-typedef enum e_action		t_action;
-typedef enum e_stack_name	t_stack_name;
+typedef enum e_action			t_action;
+typedef enum e_stack_name		t_stack_name;
 
 enum e_action
 {
@@ -22,7 +22,7 @@ enum e_stack_name
 	BOTH
 };
 
-void	action(t_stack *a, t_stack *b, t_action action, t_stack_name stack);
+void	action(t_stack *a, t_stack *b, t_action action, t_stack_name name);
 
 t_stack	init_numbers(char **argv, int size, t_stack *stack2);
 void	rank_array(int **arr, int **rank, int size);
