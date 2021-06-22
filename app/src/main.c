@@ -132,80 +132,60 @@ static void	make_under_10(t_stack *a, t_stack *b)
 			action(a, b, SWAP, A);
 }
 
+/**
+ * @param options[0] iterations
+ * @param options[1] steps
+ * @param options[2] reduce on iterate
+ * @param options[3] reverse
+ */
+static int	iter_chunk(t_stack *a, t_stack *b, int size, int options[4],
+	int chunk_max)
+{
+	t_stack	*p;
+	int		chunk_step;
+	int		chunk_min;
+	int		i;
+
+	p = a;
+	if (options[3])
+		p = b;
+	i = 0;
+	chunk_step = size / options[1];
+	while (i++ != options[0] && p->size)
+	{
+		chunk_min = chunk_max;
+		if (!options[3])
+		{
+			chunk_max += chunk_step;
+			make_chunk(a, b, chunk_min, chunk_max, FALSE);
+		}
+		else
+		{
+			chunk_max -= chunk_step;
+			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
+		}
+		if (options[2])
+			chunk_step /= 2;
+	}
+	return (chunk_max);
+}
+
 void	start_sort(t_stack *a, t_stack *b)
 {
-	int	chunk_step;
-	int	chunk_max;
-	int	chunk_min;
 	int	size;
-	int	i;
 
 	size = a->size;
 	rank_array(&a->array, &b->array, a->size);
-	chunk_max = 0;
 	if (size >= 500)
-	{
-		i = 0;
-		chunk_step = size / 2;
-		while (i++ < 5)
-		{
-			chunk_min = chunk_max;
-			chunk_max += chunk_step;
-			make_chunk(a, b, chunk_min, chunk_max, FALSE);
-			chunk_step /= 2;
-		}
-		i = 0;
-		chunk_step = size / 32;
-		while (i++ < 3)
-		{
-			chunk_min = chunk_max;
-			chunk_max -= chunk_step;
-			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
-		}
-		i = 0;
-		chunk_step = size / 16;
-		while (i++ < 4)
-		{
-			chunk_min = chunk_max;
-			chunk_max -= chunk_step;
-			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
-		}
-		i = 0;
-		chunk_step = size / 8;
-		while (i++ < 4)
-		{
-			chunk_min = chunk_max;
-			chunk_max -= chunk_step;
-			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
-		}
-		i = 0;
-		chunk_step = size / 6;
-		while (i++ < 2)
-		{
-			chunk_min = chunk_max;
-			chunk_max -= chunk_step;
-			make_chunk(a, b, chunk_max, chunk_max + chunk_step, TRUE);
-		}
-		chunk_step = size / 32;
-		chunk_max = 0;
-		chunk_min = 0;
-		while (a->size > 0)
-		{
-			chunk_min = chunk_max;
-			chunk_max += chunk_step;
-			make_chunk(a, b, chunk_min, chunk_max, FALSE);
-		}
-	}
+		iter_chunk(a, b, size, (int [4]){-1, 32, FALSE, FALSE},
+			iter_chunk(a, b, size, (int [4]){2, 6, FALSE, TRUE},
+				iter_chunk(a, b, size, (int [4]){4, 8, FALSE, TRUE},
+					iter_chunk(a, b, size, (int [4]){4, 16, FALSE, TRUE},
+						iter_chunk(a, b, size, (int [4]){3, 32, FALSE, TRUE},
+							iter_chunk(a, b, size, (int [4]){5, 2, TRUE, FALSE},
+								0))))));
 	else if (size >= 10)
-	{
-		chunk_step = size / 5;
-		while (a->size > 0)
-		{
-			chunk_min = chunk_max;
-			chunk_max += chunk_step;
-			make_chunk(a, b, chunk_min, chunk_max, FALSE);
-		}
-	}
+		iter_chunk(a, b, size, (int [4]){-1, 5, FALSE, FALSE}, 0);
 	else
 		make_under_10(a, b);
 	finish(a, b);
