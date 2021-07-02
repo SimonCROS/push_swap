@@ -19,7 +19,7 @@ NAME				= push_swap
 
 # Commands
 
-override CC			:= gcc-10
+override CC			:= gcc-11
 override RM			:= rm -rf
 override CFLAGS		:= -Wall -Wextra -Werror -O3
 override INCLUDES	:= -I$(APP)/$(INC) -I$(CHECKER)/$(INC) -I$(COMMON)/$(INC) -I$(LIBFT_DIR)/$(INC)
