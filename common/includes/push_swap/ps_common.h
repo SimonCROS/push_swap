@@ -4,8 +4,6 @@
 # include "libft.h"
 # include "stack.h"
 
-#include <stdio.h>
-
 typedef enum e_action			t_action;
 typedef enum e_stack_name		t_stack_name;
 

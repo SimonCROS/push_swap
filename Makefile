@@ -37,6 +37,7 @@ override COMMON_SRCS:=									\
 
 override APP_SRCS	:=									\
 				main.c									\
+				sort.c									\
 				chunk.c									\
 
 override APP_OBJS:= $(addprefix $(APP)/, $(addprefix $(BIN)/, $(APP_SRCS:.c=.o)))

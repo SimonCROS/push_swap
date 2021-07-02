@@ -11,6 +11,7 @@ struct s_named_stack
 	t_stack_name	name;
 };
 
+void	start_sort(t_named_stack *a, t_named_stack *b);
 int		iter_chunk(t_named_stack *a, t_named_stack *b, int options[5],
 			int chunk_max);
 void	make_chunk(t_named_stack *a, t_named_stack *b, int chunk_min,
