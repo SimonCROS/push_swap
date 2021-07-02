@@ -30,7 +30,7 @@ static int	find_nearest(const t_stack *stack, int chunk_min, int chunk_max)
 }
 
 static void	move_to_top(t_named_stack *stack, t_named_stack *other, int nearest,
-	int middle)
+	int mid)
 {
 	int	i;
 
@@ -39,31 +39,31 @@ static void	move_to_top(t_named_stack *stack, t_named_stack *other, int nearest,
 	{
 		while (i++ < nearest)
 		{
-			if (stack->size && stack->array[0] < middle)
-				action(stack, other, ROTATE, BOTH);
+			if (((t_stack *)stack)->size && ((t_stack *)stack)->array[0] < mid)
+				named_stack_action(stack, other, ROTATE, BOTH);
 			else
-				action(stack, other, ROTATE, ft_ternary(!reversed, A, B));
+				named_stack_action(stack, other, ROTATE, stack->name);
 		}
 	}
 	else
 		while (i-- > nearest)
-			action(a, b, REVERSE_ROTATE, ft_ternary(!reversed, A, B));
+			named_stack_action(stack, other, REVERSE_ROTATE, stack->name);
 }
 
 void	make_chunk(t_named_stack *stack, t_named_stack *other, int chunk_min,
 	int chunk_max)
 {
-	int				nearest;
-	int				middle;
+	int	nearest;
+	int	middle;
 
 	middle = chunk_min + (chunk_max - chunk_min) / 2;
 	while (((t_stack *)stack)->size)
 	{
-		nearest = find_nearest(stack, chunk_min, chunk_max);
+		nearest = find_nearest((t_stack *)stack, chunk_min, chunk_max);
 		if (nearest == ((t_stack *)stack)->size)
 			break ;
-		
-		action((t_stack *)stack, (t_stack *)other, PUSH, other->name);
+		move_to_top(stack, other, nearest, middle);
+		named_stack_action(stack, other, PUSH, other->name);
 	}
 }
 
@@ -75,17 +75,17 @@ void	make_chunk(t_named_stack *stack, t_named_stack *other, int chunk_min,
  */
 int	iter_chunk(t_named_stack *a, t_named_stack *b, int opts[4], int chunk_max)
 {
-	t_stack	*p;
-	int		chunk_step;
-	int		chunk_min;
-	int		i;
+	t_named_stack	*p;
+	int				chunk_step;
+	int				chunk_min;
+	int				i;
 
 	p = a;
 	if (opts[4])
 		p = b;
 	i = 0;
 	chunk_step = opts[1] / opts[2] * ft_ternary(!opts[4], 1, -1);
-	while (i++ != opts[1] && p->size)
+	while (i++ != opts[1] && p->super.size)
 	{
 		chunk_min = chunk_max;
 		chunk_max += chunk_step;
