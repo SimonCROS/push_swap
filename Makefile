@@ -19,7 +19,7 @@ NAME				= push_swap
 
 # Commands
 
-override CC			:= gcc-11
+override CC			:= gcc
 override RM			:= rm -rf
 override CFLAGS		:= -Wall -Wextra -Werror -O3
 override INCLUDES	:= -I$(APP)/$(INC) -I$(CHECKER)/$(INC) -I$(COMMON)/$(INC) -I$(LIBFT_DIR)/$(INC)
@@ -87,4 +87,15 @@ fclean:		clean
 
 re:			fclean all
 
-.PHONY:		all libs bonus clean fclean re
+unit:		all
+			@	trap "exit" INT							&&\
+				clear									&&\
+				./complexity 500 100 5500 ./checker_Mac	&&\
+				echo									&&\
+				./complexity 100 100 700 ./checker_Mac	&&\
+				echo									&&\
+				./complexity 5 100 12 ./checker_Mac		&&\
+				echo									&&\
+				./complexity 3 100 4 ./checker_Mac		\
+
+.PHONY:		all libs bonus unit clean fclean re
