@@ -97,7 +97,7 @@ clean:
 			$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean:		clean
-			$(RM) $(NAME)
+			$(RM) $(NAME) $(CHECKER_NAME)
 			$(RM) $(LIBFT)
 			$(MAKE) -C $(LIBFT_DIR) fclean
 

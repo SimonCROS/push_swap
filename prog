@@ -1,3 +1,0 @@
-#! /bin/bash
-
-make > /dev/null && python3 push_swap_visualizer/pyviz.py `ruby -e "puts (1..$1).to_a.shuffle.join(' ')"`
