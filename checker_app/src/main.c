@@ -3,7 +3,52 @@
 
 #include <stdio.h>
 
-int start_listen(t_stack *a, t_stack *b)
+static int	parse_2(t_stack *a, t_stack *b, char *line)
+{
+	if (ft_str_equals(line, "sa"))
+		action_on(a, b, SWAP);
+	else if (ft_str_equals(line, "sb"))
+		action_on(b, a, SWAP);
+	else if (ft_str_equals(line, "ss"))
+	{
+		action_on(a, b, SWAP);
+		action_on(b, a, SWAP);
+	}
+	else if (ft_str_equals(line, "pa"))
+		action_on(a, b, PUSH);
+	else if (ft_str_equals(line, "pb"))
+		action_on(b, a, PUSH);
+	else
+		return (READ_ERROR);
+	return (READ_SUCCESS);
+}
+
+static int	parse_1(t_stack *a, t_stack *b, char *line)
+{
+	if (ft_str_equals(line, "rra"))
+		action_on(a, b, REVERSE_ROTATE);
+	else if (ft_str_equals(line, "rrb"))
+		action_on(b, a, REVERSE_ROTATE);
+	else if (ft_str_equals(line, "rrr"))
+	{
+		action_on(a, b, REVERSE_ROTATE);
+		action_on(b, a, REVERSE_ROTATE);
+	}
+	else if (ft_str_equals(line, "ra"))
+		action_on(a, b, ROTATE);
+	else if (ft_str_equals(line, "rb"))
+		action_on(b, a, ROTATE);
+	else if (ft_str_equals(line, "rr"))
+	{
+		action_on(a, b, ROTATE);
+		action_on(b, a, ROTATE);
+	}
+	else
+		return (parse_2(a, b, line));
+	return (READ_SUCCESS);
+}
+
+int	start_listen(t_stack *a, t_stack *b)
 {
 	t_read_status	result;
 	char			*line;
@@ -21,42 +66,9 @@ int start_listen(t_stack *a, t_stack *b)
 		{
 			if (*line)
 				result = READ_ERROR;
-			free(line);
-			break ;
 		}
-		if (ft_str_equals(line, "rra"))
-			action_on(a, b, REVERSE_ROTATE);
-		else if (ft_str_equals(line, "rrb"))
-			action_on(b, a, REVERSE_ROTATE);
-		else if (ft_str_equals(line, "rrr"))
-		{
-			action_on(a, b, REVERSE_ROTATE);
-			action_on(b, a, REVERSE_ROTATE);
-		}
-		else if (ft_str_equals(line, "ra"))
-			action_on(a, b, ROTATE);
-		else if (ft_str_equals(line, "rb"))
-			action_on(b, a, ROTATE);
-		else if (ft_str_equals(line, "rr"))
-		{
-			action_on(a, b, ROTATE);
-			action_on(b, a, ROTATE);
-		}
-		else if (ft_str_equals(line, "sa"))
-			action_on(a, b, SWAP);
-		else if (ft_str_equals(line, "sb"))
-			action_on(b, a, SWAP);
-		else if (ft_str_equals(line, "ss"))
-		{
-			action_on(a, b, SWAP);
-			action_on(b, a, SWAP);
-		}
-		else if (ft_str_equals(line, "pa"))
-			action_on(a, b, PUSH);
-		else if (ft_str_equals(line, "pb"))
-			action_on(b, a, PUSH);
 		else
-			result = READ_ERROR;
+			result = parse_1(a, b, line);
 		free(line);
 	}
 	if (result == READ_ERROR)
@@ -73,10 +85,8 @@ int	main(int argc, char *argv[])
 	if (argc == 1)
 		return (EXIT_SUCCESS);
 	a = init_numbers(argv + 1, argc - 1, &b);
-	ret = EXIT_SUCCESS;
-	if (!a.array || !b.array || !is_valid(&a))
-		ret = EXIT_FAILURE;
-	else
+	ret = EXIT_FAILURE;
+	if (a.array && b.array && is_valid(&a))
 	{
 		ret = start_listen(&a, &b);
 		if (ret == EXIT_SUCCESS)
