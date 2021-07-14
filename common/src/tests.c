@@ -36,6 +36,8 @@ int	array_is_sorted(int *array, int length)
 {
 	int	i;
 
+	if (!array)
+		return (FALSE);
 	i = 0;
 	while (i < length - 1)
 	{

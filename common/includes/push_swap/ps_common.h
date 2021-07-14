@@ -22,6 +22,7 @@ enum e_stack_name
 	BOTH
 };
 
+void	action_on(t_stack *stack, t_stack *other, t_action action);
 void	action(t_stack *a, t_stack *b, t_action action, t_stack_name name);
 
 t_stack	init_numbers(char **argv, int size, t_stack *stack2);

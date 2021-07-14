@@ -74,7 +74,7 @@ then
 			(( OK_OBJ++ )); fi
 		if [[ ! -z $TMP ]]; then
 			TMP="$TMP"\\n; fi
-		if [[ ! -z $CHECKER && `printf "$TMP" | $CHECKER $ARG` == "OK" ]]; then
+		if [[ ! -z $CHECKER && `printf "$TMP" | $CHECKER $ARG 2>/dev/null` == "OK" ]]; then
 			(( OK_CHK++ )); fi
 		echo -e "\033[2KPire = \033[31m${WORSE}\033[0m instructions"
 		echo -e "\033[2KMoyenne = \033[33m${MED}\033[0m instructions"

@@ -1,14 +1,14 @@
 #include "push_swap/ps_common.h"
 
-static void	action_on(t_stack *stack, t_stack *other, t_action action)
+void	action_on(t_stack *stack, t_stack *other, t_action action)
 {
-	if (action == PUSH)
+	if (action == PUSH && other->size)
 		stack_unshift(stack, stack_shift(other));
-	if (action == SWAP)
+	if (action == SWAP && stack->size > 1)
 		stack_insert(stack, stack_shift(stack), 1);
-	if (action == ROTATE)
+	if (action == ROTATE && stack->size > 1)
 		stack_push(stack, stack_shift(stack));
-	if (action == REVERSE_ROTATE)
+	if (action == REVERSE_ROTATE && stack->size > 1)
 		stack_unshift(stack, stack_pop(stack));
 }
 

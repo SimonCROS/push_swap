@@ -5,7 +5,7 @@ override SRC		:= src
 override INC		:= includes
 
 override APP		:= app
-override CHECKER	:= checker
+override CHECKER	:= checker_app
 override COMMON		:= common
 
 # Libraries
@@ -16,6 +16,7 @@ override LIBFT		:= libft.a
 # Properties
 
 NAME				= push_swap
+CHECKER_NAME		= checker
 
 # Commands
 
@@ -27,6 +28,9 @@ override INCLUDES	:= -I$(APP)/$(INC) -I$(CHECKER)/$(INC) -I$(COMMON)/$(INC) -I$(
 # Sources
 
 override CHECKER_SRCS:=									\
+				main.c									\
+				../libs/gnl/get_next_line.c				\
+				../libs/gnl/get_next_line_utils.c		\
 
 override COMMON_SRCS:=									\
 				init.c									\
@@ -44,13 +48,23 @@ override APP_OBJS:= $(addprefix $(APP)/, $(addprefix $(BIN)/, $(APP_SRCS:.c=.o))
 override CHECKER_OBJS:= $(addprefix $(CHECKER)/, $(addprefix $(BIN)/, $(CHECKER_SRCS:.c=.o)))
 override COMMON_OBJS:= $(addprefix $(COMMON)/, $(addprefix $(BIN)/, $(COMMON_SRCS:.c=.o)))
 
-override OBJS		:= $(APP_OBJS) $(CHECKER_OBJS) $(COMMON_OBJS)
+override OBJS		:= $(APP_OBJS) $(COMMON_OBJS)
 
-$(APP)/$(BIN)/%.o:	$(APP)/$(SRC)/%.c $(COMMON_HEADERS)
+override APP_HEADERS	:= \
+				$(APP)/includes/push_swap/ps_app.h			\
+
+override CHECKER_HEADERS	:= \
+				$(CHECKER)/includes/push_swap/ps_checker.h	\
+
+override COMMON_HEADERS	:= \
+				$(COMMON)/includes/stack.h					\
+				$(COMMON)/includes/push_swap/ps_common.h	\
+
+$(APP)/$(BIN)/%.o:	$(APP)/$(SRC)/%.c $(APP_HEADERS) $(COMMON_HEADERS)
 			@mkdir -p $(dir $@);
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(CHECKER)/$(BIN)/%.o:	$(CHECKER)/$(SRC)/%.c $(COMMON_HEADERS)
+$(CHECKER)/$(BIN)/%.o:	$(CHECKER)/$(SRC)/%.c $(CHECKER_HEADERS) $(COMMON_HEADERS)
 			@mkdir -p $(dir $@);
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -58,26 +72,28 @@ $(COMMON)/$(BIN)/%.o:	$(COMMON)/$(SRC)/%.c $(COMMON_HEADERS)
 			@mkdir -p $(dir $@);
 			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(BIN)/%.o:	$(SRC)/%.c $(APP_HEADERS) $(CHECKER_HEADERS) $(COMMON_HEADERS)
+			@mkdir -p $(dir $@);
+			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 #TODO recompile on headers
 
 all:		libs $(NAME)
 
-# bonus:		checker
+bonus:		all $(CHECKER_NAME)
 
 libs:
 			$(MAKE) -C $(LIBFT_DIR)
+
+$(NAME):	$(OBJS) $(LIBFT_DIR)/$(LIBFT)
 			ln -sf $(LIBFT_DIR)/$(LIBFT)
+			$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
 
-$(BIN)/%.o:	$(SRC)/%.c $(HEADERS)
-			@mkdir -p $(dir $@);
-			$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
-$(NAME):	$(OBJS) $(LIBFT) $(MINILIBX)
-			$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) $(LIBRARIES)
+$(CHECKER_NAME):	$(CHECKER_OBJS) $(COMMON_OBJS)
+			$(CC) $(CFLAGS) $(CHECKER_OBJS) $(COMMON_OBJS) $(LIBFT) -o $(CHECKER_NAME)			
 
 clean:
-			$(RM) $(OBJS)
-			find $(BIN) -type d -empty -delete
+			$(RM) $(OBJS) $(CHECKER_OBJS)
 			$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean:		clean
