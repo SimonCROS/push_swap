@@ -39,7 +39,9 @@ static void	move_to_top(t_named_stack *stack, t_named_stack *other, int nearest,
 	{
 		while (i++ < nearest)
 		{
-			if (((t_stack *)other)->size && ((t_stack *)other)->array[0] < mid)
+			if (other->name == A && ((t_stack *)other)->size && ((t_stack *)other)->array[0] > mid)
+				named_stack_action(stack, other, ROTATE, BOTH);
+			else if (other->name == B && ((t_stack *)other)->size && ((t_stack *)other)->array[0] < mid)
 				named_stack_action(stack, other, ROTATE, BOTH);
 			else
 				named_stack_action(stack, other, ROTATE, stack->name);

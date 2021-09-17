@@ -93,5 +93,5 @@ then
 	done
 	echo -e "\033[?25h\033[5B"
 else
-	echo "./complexity [stack_size] [test number]"
+	echo -e "\033[1;31mUsage :\n\033[1;30m./complexity [-s] <nb_item> <nb_iter> [goal] [checker]\033[0m"
 fi
