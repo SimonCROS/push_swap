@@ -70,7 +70,7 @@ then
 			WORSE=$LINES; fi
 		if (( $LINES < $BEST )); then
 			BEST=$LINES; fi
-		if (( OBJECTIVE && LINES < OBJECTIVE )); then
+		if (( OBJECTIVE && LINES <= OBJECTIVE )); then
 			(( OK_OBJ++ )); fi
 		if [[ ! -z $TMP ]]; then
 			TMP="$TMP"\\n; fi
