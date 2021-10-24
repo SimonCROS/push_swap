@@ -35,7 +35,7 @@ static void	move_to_top(t_named_stack *stack, t_named_stack *other, int nearest,
 	int	i;
 
 	i = 0;
-	if (nearest > 0)
+	if (nearest >= 0)
 	{
 		while (i++ < nearest)
 		{
@@ -65,6 +65,12 @@ void	make_chunk(t_named_stack *stack, t_named_stack *other, int chunk_min,
 		if (nearest == ((t_stack *)stack)->size)
 			break ;
 		move_to_top(stack, other, nearest, middle);
+
+		if (other->name == A && ((t_stack *)other)->size && ((t_stack *)other)->array[0] > middle)
+			named_stack_action(stack, other, ROTATE, other->name);
+		else if (other->name == B && ((t_stack *)other)->size && ((t_stack *)other)->array[0] < middle)
+			named_stack_action(stack, other, ROTATE, other->name);
+
 		named_stack_action(stack, other, PUSH, other->name);
 	}
 }
