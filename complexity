@@ -11,7 +11,7 @@ OK_CHK=0
 CHECKER=""
 SORTED=false
 
-trap "echo -e '\rPi\033[?25h\033[3B'; exit" INT
+trap "echo -e '\033[?25h\033[5B'; exit" INT
 
 if [[ ! -x push_swap ]]
 then
