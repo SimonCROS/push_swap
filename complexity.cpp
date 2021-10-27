@@ -15,8 +15,9 @@ using namespace std;
 
 struct program_opts
 {
-	bool	help;
-	bool	sorted;
+	bool				help;
+	bool				sorted;
+	optional<string>	program;
 };
 
 struct program_params
@@ -75,18 +76,22 @@ static struct program_opts getOptions(int& argc, char **&argv)
 	{
 		{"help", no_argument, NULL, 'h'},
 		{"sorted", no_argument, NULL, 's'},
+		{"program", required_argument, NULL, 'p'},
 		{NULL, 0, NULL, 0}
 	};
 
 	program_opts opts = {false};
 
 	int ch;
-	while ((ch = getopt_long(argc, argv, "hs", long_options, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "hsp:", long_options, NULL)) != -1)
 	{
 		switch (ch)
 		{
 			case 'h':
 				opts.help = true;
+				break;
+			case 'p':
+				opts.program = optarg;
 				break;
 			case 's':
 				opts.sorted = true;
@@ -105,7 +110,6 @@ static struct program_params getParameters(int argc, char **argv)
 
 	if (argc < 2 || argc > 4)
 		throw invalid_argument(getHelp());
-	params.program = assertExecutable("./push_swap");
 	params.numbers = parseNumber(argv[0], 0);
 	params.iterations = parseNumber(argv[1], 1);
 	if (argc >= 3)
@@ -125,17 +129,59 @@ static void showCursor()
 	cout << "\e[?25h";
 }
 
-static std::string exec(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
+#define NUM_PIPES		  2
+#define PARENT_WRITE_PIPE  0
+#define PARENT_READ_PIPE   1
+int pipes[NUM_PIPES][2];
+#define READ_FD  0
+#define WRITE_FD 1
+#define PARENT_READ_FD  ( pipes[PARENT_READ_PIPE][READ_FD]   )
+#define PARENT_WRITE_FD ( pipes[PARENT_WRITE_PIPE][WRITE_FD] )
+#define CHILD_READ_FD   ( pipes[PARENT_WRITE_PIPE][READ_FD]  )
+#define CHILD_WRITE_FD  ( pipes[PARENT_READ_PIPE][WRITE_FD]  )
+
+static std::string exec(char** argv, optional<string> input = nullopt) {
+	std::array<char, 128> buffer;
+	std::string result;
+
+	int outfd[2];
+	int infd[2];
+	 
+	pipe(pipes[PARENT_READ_PIPE]);
+	pipe(pipes[PARENT_WRITE_PIPE]);
+	 
+	if(fork() == 0)
+	{ 
+		dup2(CHILD_READ_FD, STDIN_FILENO);
+		dup2(CHILD_WRITE_FD, STDOUT_FILENO);
+
+		close(CHILD_READ_FD);
+		close(CHILD_WRITE_FD);
+		close(PARENT_READ_FD);
+		close(PARENT_WRITE_FD);
+
+		execv(argv[0], argv);
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		close(CHILD_READ_FD);
+		close(CHILD_WRITE_FD);
+		if (input.has_value())
+			write(PARENT_WRITE_FD, input.value().c_str(), 5);
+		close(PARENT_WRITE_FD);
+
+		int len = 0;
+		while ((len = read(PARENT_READ_FD, buffer.data(), buffer.size())) > 0)
+		{
+			buffer[len] = 0;
+			result += buffer.data();
+		}
+		close(PARENT_READ_FD);
+
+		waitpid(-1, NULL, 0);
+	}
+	return result;
 }
 
 static void print(program_params params, int done, int total, int best, int worst, int successful, int ok)
@@ -169,8 +215,21 @@ int main(int argc, char **argv)
 	try
 	{
 		params = getParameters(argc, argv);
+		if (opts.program.has_value())
+			params.program = assertExecutable(opts.program.value());
+		else
+		{
+			try
+			{
+				params.program = assertExecutable("../push_swap");
+			}
+			catch(const std::invalid_argument& e)
+			{
+				params.program = assertExecutable("./push_swap");
+			}
+		}
 	}
-	catch (const invalid_argument& e)
+	catch (const std::invalid_argument& e)
 	{
 		cerr << e.what() << endl;
 		return EXIT_FAILURE;
@@ -195,7 +254,7 @@ int main(int argc, char **argv)
 	int ok = 0;
 
 	hideCursor();
-	cout << "\033[97mDémarrage du test : \033[95m" << params.numbers << "\033[97m éléments, \033[95m" << params.iterations << "\033[97m itérations" << endl;
+	cout << "\033[97mDémarrage du test : \033[95m" << params.numbers << "\033[97m éléments, \033[95m" << params.iterations << "\033[97m itérations\033[0m" << endl;
 	while (done < params.iterations)
 	{
 		vector<int> nums(params.numbers);
@@ -208,16 +267,24 @@ int main(int argc, char **argv)
 				return std::to_string(d);
 			}
 		);
-		std::string command = params.program;
-		for (const string &piece : args)
-			command += " " + piece;
 
-        string result = exec(command.c_str());
+		vector<char*> cargs;
+		cargs.push_back(const_cast<char*>(params.program.c_str()));
+		for (const string& a : args)
+			cargs.push_back(const_cast<char*>(a.c_str()));
+		cargs.push_back(nullptr);
+
+		string result = exec(cargs.data());
 		int lines = std::count(result.begin(), result.end(), '\n');
 
 		done++;
 		total += lines;
 
+		if (params.checker.has_value())
+		{
+			cargs[0] = const_cast<char*>(params.checker.value().c_str());
+			cout << exec(cargs.data(), result);
+		}
 		if (lines <= params.objective.value_or(-1))
 			successful++;
 		if (lines < best || best == -1)
