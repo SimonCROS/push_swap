@@ -140,20 +140,22 @@ int pipes[NUM_PIPES][2];
 #define CHILD_READ_FD   ( pipes[PARENT_WRITE_PIPE][READ_FD]  )
 #define CHILD_WRITE_FD  ( pipes[PARENT_READ_PIPE][WRITE_FD]  )
 
-static std::string exec(char** argv, optional<string> input = nullopt) {
+static string exec(char** argv, optional<string> input = nullopt)
+{
 	std::array<char, 128> buffer;
-	std::string result;
+	string result;
 
 	int outfd[2];
 	int infd[2];
 	 
 	pipe(pipes[PARENT_READ_PIPE]);
 	pipe(pipes[PARENT_WRITE_PIPE]);
-	 
+
 	if(fork() == 0)
 	{ 
 		dup2(CHILD_READ_FD, STDIN_FILENO);
 		dup2(CHILD_WRITE_FD, STDOUT_FILENO);
+		dup2(CHILD_WRITE_FD, STDERR_FILENO);
 
 		close(CHILD_READ_FD);
 		close(CHILD_WRITE_FD);
@@ -168,11 +170,11 @@ static std::string exec(char** argv, optional<string> input = nullopt) {
 		close(CHILD_READ_FD);
 		close(CHILD_WRITE_FD);
 		if (input.has_value())
-			write(PARENT_WRITE_FD, input.value().c_str(), 5);
+			write(PARENT_WRITE_FD, input.value().c_str(), input.value().size());
 		close(PARENT_WRITE_FD);
 
 		int len = 0;
-		while ((len = read(PARENT_READ_FD, buffer.data(), buffer.size())) > 0)
+		while ((len = read(PARENT_READ_FD, buffer.data(), buffer.size() - 1)) > 0)
 		{
 			buffer[len] = 0;
 			result += buffer.data();
@@ -239,9 +241,7 @@ int main(int argc, char **argv)
 		showCursor();
 		cout << "\033[6B\033[0m";
 	});
-	signal(SIGINT, [](int s) {
-		exit(EXIT_SUCCESS);
-	});
+	signal(SIGINT, [](int s) {exit(EXIT_SUCCESS);});
 	
 	auto rd = std::random_device {}; 
 	auto rng = std::default_random_engine { rd() };
@@ -283,7 +283,9 @@ int main(int argc, char **argv)
 		if (params.checker.has_value())
 		{
 			cargs[0] = const_cast<char*>(params.checker.value().c_str());
-			cout << exec(cargs.data(), result);
+
+			if (exec(cargs.data(), result) == "OK\n")
+				ok++;
 		}
 		if (lines <= params.objective.value_or(-1))
 			successful++;
@@ -292,7 +294,7 @@ int main(int argc, char **argv)
 		if (lines > worst)
 			worst = lines;
 
-		print(params, done, total, best, worst, successful, 0);
+		print(params, done, total, best, worst, successful, ok);
 		cout << "\033[6A";
 	}
 	return EXIT_SUCCESS;
