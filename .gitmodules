@@ -1,6 +1,7 @@
 [submodule "libft"]
 	path = libft
 	url = https://github.com/SimonCROS/libft
-[submodule "complexity"]
+[submodule "push_swap_tester"]
 	path = push_swap_tester
+	branch = main
 	url = https://github.com/SimonCROS/push_swap_tester
