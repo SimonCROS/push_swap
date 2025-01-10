@@ -5,9 +5,11 @@ t_stack	init_numbers(char **argv, int size, t_stack *stack2)
 	int	*array;
 	int	i;
 
-	stack2->array = calloc(size, sizeof(int));
+	stack2->array = ft_calloc(size, sizeof(int));
 	stack2->size = 0;
-	array = calloc(size, sizeof(int));
+	stack2->start = 0;
+	stack2->capacity = size;
+	array = ft_calloc(size, sizeof(int));
 	i = 0;
 	while (i < size)
 	{
@@ -18,7 +20,7 @@ t_stack	init_numbers(char **argv, int size, t_stack *stack2)
 		}
 		i++;
 	}
-	return ((t_stack){array, size});
+	return ((t_stack){array, size, 0, size});
 }
 
 void	rank_array(int **arr, int **rank, int size)

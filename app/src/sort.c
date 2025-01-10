@@ -10,19 +10,18 @@ void	named_stack_action(t_named_stack *stack, t_named_stack *other,
 		action((t_stack *)other, (t_stack *)stack, a, stack_name);
 }
 
-static void	move_biggest_to_top(t_stack *a, t_stack *b, int biggest,
-	int biggest_i)
+static void	move_biggest_to_top(t_stack *a, t_stack *b, int biggest, int biggest_i)
 {
-	int	half;
-	int	i;
+	int		half;
+	int		i;
 
 	i = 0;
 	half = b->size / 2;
 	while (i < b->size)
 	{
-		if (b->array[i] > biggest)
+		if (stack_get(b, i) > biggest)
 		{
-			biggest = b->array[i];
+			biggest = stack_get(b, i);
 			biggest_i = i;
 			if (i > half * 1.5)
 				biggest_i = -(b->size - i);
@@ -59,16 +58,16 @@ static void	make_under_10(t_named_stack *a, t_named_stack *b)
 	}
 	if (a->super.size == 3)
 	{
-		if (a->super.array[0] > a->super.array[1]
-			&& a->super.array[0] > a->super.array[2])
+		if (stack_get((t_stack *)a, 0) > stack_get((t_stack *)a, 1)
+			&& stack_get((t_stack *)a, 0) > stack_get((t_stack *)a, 2))
 			named_stack_action(a, b, ROTATE, A);
-		else if (a->super.array[1] > a->super.array[2])
+		else if (stack_get((t_stack *)a, 1) > stack_get((t_stack *)a, 2))
 			named_stack_action(a, b, SWAP, A);
-		if (a->super.array[0] > a->super.array[2])
+		if (stack_get((t_stack *)a, 0) > stack_get((t_stack *)a, 2))
 			named_stack_action(a, b, ROTATE, A);
 	}
 	if (a->super.size >= 2)
-		if (a->super.array[0] > a->super.array[1])
+		if (stack_get((t_stack *)a, 0) > stack_get((t_stack *)a, 1))
 			named_stack_action(a, b, SWAP, A);
 }
 

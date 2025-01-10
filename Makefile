@@ -36,8 +36,7 @@ override COMMON_SRCS:=									\
 				init.c									\
 				tests.c									\
 				actions.c								\
-				stack1.c								\
-				stack2.c								\
+				looping_stack.c							\
 
 override APP_SRCS	:=									\
 				main.c									\

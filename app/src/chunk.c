@@ -3,14 +3,14 @@
 
 static int	find_nearest(const t_stack *stack, int chunk_min, int chunk_max)
 {
-	int				nearest;
-	int				i;
+	int	nearest;
+	int	i;
 
 	nearest = stack->size;
 	i = 0;
 	while (i < stack->size)
 	{
-		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
+		if (stack_get(stack, i) >= chunk_min && stack_get(stack, i) < chunk_max)
 		{
 			nearest = i;
 			break ;
@@ -20,7 +20,7 @@ static int	find_nearest(const t_stack *stack, int chunk_min, int chunk_max)
 	i = stack->size;
 	while (i-- > 0 && stack->size - i < nearest * 0.5)
 	{
-		if (stack->array[i] >= chunk_min && stack->array[i] < chunk_max)
+		if (stack_get(stack, i) >= chunk_min && stack_get(stack, i) < chunk_max)
 		{
 			nearest = -(stack->size - i);
 			break ;
@@ -39,9 +39,9 @@ static void	move_to_top(t_named_stack *stack, t_named_stack *other, int nearest,
 	{
 		while (i++ < nearest)
 		{
-			if (other->name == A && ((t_stack *)other)->size && ((t_stack *)other)->array[0] > mid)
+			if (other->name == A && ((t_stack *)other)->size && stack_get((t_stack *)other, 0) > mid)
 				named_stack_action(stack, other, ROTATE, BOTH);
-			else if (other->name == B && ((t_stack *)other)->size && ((t_stack *)other)->array[0] < mid)
+			else if (other->name == B && ((t_stack *)other)->size && stack_get((t_stack *)other, 0) < mid)
 				named_stack_action(stack, other, ROTATE, BOTH);
 			else
 				named_stack_action(stack, other, ROTATE, stack->name);
@@ -66,9 +66,9 @@ void	make_chunk(t_named_stack *stack, t_named_stack *other, int chunk_min,
 			break ;
 		move_to_top(stack, other, nearest, middle);
 
-		if (other->name == A && ((t_stack *)other)->size && ((t_stack *)other)->array[0] > middle)
+		if (other->name == A && ((t_stack *)other)->size && stack_get((t_stack *)other, 0) > middle)
 			named_stack_action(stack, other, ROTATE, other->name);
-		else if (other->name == B && ((t_stack *)other)->size && ((t_stack *)other)->array[0] < middle)
+		else if (other->name == B && ((t_stack *)other)->size && stack_get((t_stack *)other, 0) < middle)
 			named_stack_action(stack, other, ROTATE, other->name);
 
 		named_stack_action(stack, other, PUSH, other->name);

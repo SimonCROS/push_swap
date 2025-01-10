@@ -80,7 +80,7 @@ int	main(int argc, char *argv[])
 {
 	t_stack	a;
 	t_stack	b;
-	int		ret;
+	int				ret;
 
 	if (argc == 1)
 		return (EXIT_SUCCESS);

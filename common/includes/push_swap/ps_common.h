@@ -2,7 +2,7 @@
 # define PS_COMMON_H
 
 # include "libft.h"
-# include "stack.h"
+# include "looping_stack.h"
 
 typedef enum e_action			t_action;
 typedef enum e_stack_name		t_stack_name;
