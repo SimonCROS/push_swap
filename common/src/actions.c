@@ -13,13 +13,18 @@ static void	swap(t_stack *stack) {
 void	action_on(t_stack *stack, t_stack *other, t_action action)
 {
 	if (action == PUSH && other->size)
+	{
 		stack_unshift(stack, stack_shift(other));
-	if (action == SWAP && stack->size > 1)
-		swap(stack);
-	if (action == ROTATE && stack->size > 1)
-		stack_push(stack, stack_shift(stack));
-	if (action == REVERSE_ROTATE && stack->size > 1)
-		stack_unshift(stack, stack_pop(stack));
+	}
+	else if (stack->size > 1)
+	{
+		if (action == SWAP)
+			swap(stack);
+		else if (action == ROTATE)
+			stack_push(stack, stack_shift(stack));
+		else if (action == REVERSE_ROTATE)
+			stack_unshift(stack, stack_pop(stack));
+	}
 }
 
 void	action(t_stack *a, t_stack *b, t_action action, t_stack_name name)
