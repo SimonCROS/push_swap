@@ -30,7 +30,8 @@ void	action(t_stack *a, t_stack *b, t_action action, t_stack_name name)
 		action_on(a, b, action);
 	if (name == B || name == BOTH)
 		action_on(b, a, action);
-
+	// 42 norm does not allow inline array initialization, so I use this literal as an array
 	operations = "sa\n\0 sb\n\0 ss\n\0 pa\n\0 pb\n\0 pp\n\0 ra\n\0 rb\n\0 rr\n\0 rra\n\0rrb\n\0rrr\n\0";
+	// 3 variants for each operation, each in a string of length 5
 	ft_putstr(operations + ((action * 3) + name) * 5);
 }
