@@ -24,26 +24,13 @@ void	action_on(t_stack *stack, t_stack *other, t_action action)
 
 void	action(t_stack *a, t_stack *b, t_action action, t_stack_name name)
 {
-	char	*operation;
+	char	*operations;
 
 	if (name == A || name == BOTH)
 		action_on(a, b, action);
 	if (name == B || name == BOTH)
 		action_on(b, a, action);
-	if (action == PUSH)
-		operation = "p";
-	else if (action == SWAP)
-		operation = "s";
-	else if (action == ROTATE)
-		operation = "r";
-	else
-		operation = "rr";
-	ft_putstr(operation);
-	if (name == A)
-		ft_putchar('a');
-	else if (name == B)
-		ft_putchar('b');
-	else if (name == BOTH)
-		ft_putchar(operation[0]);
-	ft_putchar('\n');
+
+	operations = "sa\n\0 sb\n\0 ss\n\0 pa\n\0 pb\n\0 pp\n\0 ra\n\0 rb\n\0 rr\n\0 rra\n\0rrb\n\0rrr\n\0";
+	ft_putstr(operations + ((action * 3) + name) * 5);
 }
